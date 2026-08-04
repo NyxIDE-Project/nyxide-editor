@@ -1,0 +1,142 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid $ui-black-transparent;
+}
+
+.tab,
+.tab-active {
+    padding: 0.6rem 1rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: $text-primary;
+    opacity: 0.6;
+}
+
+.tab-active {
+    opacity: 1;
+    box-shadow: inset 0 -3px 0 0 $extensions-primary;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+    padding: 0.5rem;
+    border-bottom: 1px solid $ui-black-transparent;
+}
+
+.table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid $ui-black-transparent;
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+
+.row-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.small-button {
+    padding: 0.3rem 0.6rem;
+    border-radius: $form-radius;
+    background: $ui-secondary;
+    color: $text-primary;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+.small-button-danger {
+    padding: 0.3rem 0.6rem;
+    border-radius: $form-radius;
+    background: rgba(255, 92, 92, 0.15);
+    color: rgb(255, 92, 92);
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.badge-admin {
+    background: $extensions-primary;
+    color: white;
+}
+
+.badge-user {
+    background: $ui-secondary;
+    color: $text-primary;
+}
+
+.badge-banned {
+    background: rgba(255, 92, 92, 0.15);
+    color: rgb(255, 92, 92);
+}
+
+.inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    margin-top: 0.4rem;
+}
+
+.inline-input {
+    box-sizing: border-box;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid $ui-black-transparent;
+    border-radius: $form-radius;
+    font-size: 0.8rem;
+    font: inherit;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.pagination-button {
+    padding: 0.4rem 1rem;
+    border-radius: $form-radius;
+    background: $ui-secondary;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.report-target {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.report-target-thumb {
+    width: 2.5rem;
+    height: 2rem;
+    object-fit: cover;
+    border-radius: 0.2rem;
+    background: $ui-secondary;
+}

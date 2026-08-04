@@ -1,0 +1,7 @@
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+const MAX_BANNER_BYTES = 2 * 1024 * 1024;
+
+export {
+    MAX_UPLOAD_BYTES,
+    MAX_BANNER_BYTES
+};

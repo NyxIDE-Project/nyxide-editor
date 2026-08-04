@@ -32,6 +32,8 @@ import FramerateChanger from '../../containers/tw-framerate-changer.jsx';
 import ChangeUsername from '../../containers/tw-change-username.jsx';
 import CloudVariablesToggler from '../../containers/tw-cloud-toggler.jsx';
 import TWSaveStatus from './tw-save-status.jsx';
+import NyxSaveButton from './nyx-save-button.jsx';
+import NyxAccountMenu from './nyx-account-menu.jsx';
 import TWNews from './tw-news.jsx';
 
 import {openTipsLibrary, openSettingsModal, openRestorePointModal} from '../../reducers/modals';
@@ -492,12 +494,14 @@ class MenuBar extends React.Component {
             >
                 <div className={styles.mainMenu}>
                     <div className={styles.fileGroup}>
-                        <img
-                            className={styles.scratchLogo}
-                            src="/logo.png"
-                            alt={APP_NAME}
-                            draggable={false}
-                        />
+                        <a href="/">
+                            <img
+                                className={classNames(styles.scratchLogo, styles.clickable)}
+                                src="/logo.png"
+                                alt={APP_NAME}
+                                draggable={false}
+                            />
+                        </a>
                         {this.props.errors.length > 0 && <div>
                             <MenuLabel
                                 open={this.props.errorsMenuOpen}
@@ -1020,9 +1024,11 @@ class MenuBar extends React.Component {
                 </div>
 
                 <div className={styles.accountInfoGroup}>
+                    <NyxSaveButton />
                     <TWSaveStatus
                         showSaveFilePicker={this.props.showSaveFilePicker}
                     />
+                    <NyxAccountMenu />
                 </div>
 
                 {aboutButton}

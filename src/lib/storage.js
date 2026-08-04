@@ -28,6 +28,18 @@ class Storage extends ScratchStorage {
             this.getAssetCreateConfig.bind(this)
         );
     }
+    // nyxide: projects are stored as a single opaque sb3 blob by our own server, so we
+    // only need a GET config. Creating/updating goes through nyx-save-button.jsx directly,
+    // not through scratch-storage's create/update flow (which assumes per-asset endpoints).
+    addNyxWebStore () {
+        this.addWebStore(
+            [this.AssetType.Project],
+            this.getNyxProjectGetConfig.bind(this)
+        );
+    }
+    getNyxProjectGetConfig (projectAsset) {
+        return `${this.projectHost}/${projectAsset.assetId}/file`;
+    }
     setProjectHost (projectHost) {
         this.projectHost = projectHost;
     }

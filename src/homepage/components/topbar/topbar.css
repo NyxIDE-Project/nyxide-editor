@@ -1,0 +1,58 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+/*
+ * Most of this bar's look (colors, height, fonts, hover states, item spacing) comes
+ * straight from the editor's own menu-bar.css classes (menuBar/mainMenu/fileGroup/
+ * scratchLogo/menuBarItem/accountInfoGroup), applied directly in topbar.jsx. This file
+ * only covers the things menu-bar.css has no equivalent for: centering the bar's content
+ * to match the rest of the page, the search box, and the account dropdown.
+ */
+
+.topbar {
+    width: 100%;
+    height: $menu-bar-height;
+    background-color: $menu-bar-background;
+    background-image: $menu-bar-background-image;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.topbar-inner {
+    box-sizing: border-box;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.nav-link-active {
+    box-shadow: inset 0 -3px 0 0 $menu-bar-foreground;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 22rem;
+    margin-left: 0.5rem;
+}
+
+.search-input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border-radius: $form-radius;
+    border: none;
+    font-size: $menu-bar-standard-font-size;
+    font-family: inherit;
+    font-weight: normal;
+}
+
+.account-menu-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}

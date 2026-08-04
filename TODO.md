@@ -1,0 +1,4 @@
+- Add more social features like hashtags (intigrate this into the homepage by showing popular hashtags)
+- Improve the UI and featureset
+- Add expandable blocks (like expandable if-else blocks and join and others)
+- Improve the security (add captcha and more security mesures like requiering email) and add google login support

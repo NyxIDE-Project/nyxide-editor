@@ -1,0 +1,164 @@
+import PropTypes from 'prop-types';
+import React from 'react';
+import {Redirect} from 'react-router-dom';
+
+import {AuthContext} from '../../contexts/auth-context.jsx';
+import {putJson, postForm} from '../../lib/api';
+import {MAX_BANNER_BYTES} from '../../../lib/nyxide-constants';
+
+import styles from '../page.css';
+
+class SettingsForm extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            displayName: props.user.displayName || '',
+            bio: props.user.bio || '',
+            avatarFile: null,
+            bannerFile: null,
+            bannerPreviewUrl: props.user.bannerUrl || null,
+            saved: false,
+            error: null,
+            isSaving: false
+        };
+        this.handleDisplayNameChange = this.handleDisplayNameChange.bind(this);
+        this.handleBioChange = this.handleBioChange.bind(this);
+        this.handleAvatarChange = this.handleAvatarChange.bind(this);
+        this.handleBannerChange = this.handleBannerChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleDisplayNameChange (e) {
+        this.setState({displayName: e.target.value, saved: false});
+    }
+    handleBioChange (e) {
+        this.setState({bio: e.target.value, saved: false});
+    }
+    handleAvatarChange (e) {
+        this.setState({avatarFile: e.target.files[0] || null, saved: false});
+    }
+    handleBannerChange (e) {
+        const file = e.target.files[0] || null;
+        if (file && file.size > MAX_BANNER_BYTES) {
+            this.setState({error: 'That image is larger than the 2MB banner limit.'});
+            return;
+        }
+        this.setState({
+            bannerFile: file,
+            bannerPreviewUrl: file ? URL.createObjectURL(file) : this.state.bannerPreviewUrl,
+            saved: false,
+            error: null
+        });
+    }
+    async handleSubmit (e) {
+        e.preventDefault();
+        this.setState({isSaving: true, error: null});
+        try {
+            await putJson('/api/users/me', {
+                displayName: this.state.displayName,
+                bio: this.state.bio
+            });
+            if (this.state.avatarFile) {
+                const formData = new FormData();
+                formData.append('avatar', this.state.avatarFile);
+                await postForm('/api/users/me/avatar', formData);
+            }
+            if (this.state.bannerFile) {
+                const formData = new FormData();
+                formData.append('banner', this.state.bannerFile);
+                await postForm('/api/users/me/banner', formData);
+            }
+            this.setState({isSaving: false, saved: true});
+        } catch (err) {
+            this.setState({isSaving: false, error: err.message});
+        }
+    }
+    render () {
+        return (
+            <div>
+                <h1 className={styles.heading}>Account Settings</h1>
+                <form
+                    className={styles.form}
+                    onSubmit={this.handleSubmit}
+                >
+                    <label className={styles.fieldLabel}>
+                        Display Name
+                        <input
+                            className={styles.textInput}
+                            type="text"
+                            value={this.state.displayName}
+                            onChange={this.handleDisplayNameChange}
+                        />
+                    </label>
+                    <label className={styles.fieldLabel}>
+                        Bio
+                        <textarea
+                            className={styles.textArea}
+                            value={this.state.bio}
+                            onChange={this.handleBioChange}
+                        />
+                    </label>
+                    <label className={styles.fieldLabel}>
+                        Banner (max 2MB)
+                        {this.state.bannerPreviewUrl && (
+                            <img
+                                className={styles.bannerPreview}
+                                src={this.state.bannerPreviewUrl}
+                                alt="Banner preview"
+                            />
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={this.handleBannerChange}
+                        />
+                    </label>
+                    <label className={styles.fieldLabel}>
+                        Profile Picture
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={this.handleAvatarChange}
+                        />
+                    </label>
+                    {this.state.error && (
+                        <div className={styles.error}>{this.state.error}</div>
+                    )}
+                    {this.state.saved && !this.state.error && (
+                        <div>Saved!</div>
+                    )}
+                    <button
+                        className={styles.submitButton}
+                        type="submit"
+                        disabled={this.state.isSaving}
+                    >
+                        {this.state.isSaving ? 'Saving…' : 'Save Changes'}
+                    </button>
+                </form>
+            </div>
+        );
+    }
+}
+
+SettingsForm.propTypes = {
+    user: PropTypes.shape({
+        bio: PropTypes.string,
+        displayName: PropTypes.string,
+        bannerUrl: PropTypes.string
+    }).isRequired
+};
+
+const SettingsPage = () => (
+    <AuthContext.Consumer>
+        {({user, loading}) => {
+            if (loading) {
+                return <div className={styles.loading}>Loading…</div>;
+            }
+            if (!user) {
+                return <Redirect to="/login" />;
+            }
+            return <SettingsForm user={user} />;
+        }}
+    </AuthContext.Consumer>
+);
+
+export default SettingsPage;

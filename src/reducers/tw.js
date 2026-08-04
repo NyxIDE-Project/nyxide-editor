@@ -9,6 +9,7 @@ const SET_WINDOW_FULLSCREEN = 'tw/SET_WINDOW_FULLSCREEN';
 const SET_DIMENSIONS = 'tw/SET_DIMENSIONS';
 const SET_AUTHOR = 'tw/SET_AUTHOR';
 const SET_DESCRIPTION = 'tw/SET_DESCRIPTION';
+const SET_STATS = 'tw/SET_STATS';
 const ADD_COMPILE_ERROR = 'tw/ADD_COMPILE_ERROR';
 const CLEAR_COMPILE_ERRORS = 'tw/CLEAR_COMPILE_ERRORS';
 const SET_FILE_HANDLE = 'tw/SET_FILE_HANDLE';
@@ -42,6 +43,13 @@ export const initialState = {
     description: {
         instructions: '',
         credits: ''
+    },
+    stats: {
+        viewCount: 0,
+        likeCount: 0,
+        favoriteCount: 0,
+        isLikedByViewer: false,
+        isFavoritedByViewer: false
     },
     compileErrors: [],
     fileHandle: null,
@@ -101,6 +109,10 @@ const reducer = function (state, action) {
     case SET_DESCRIPTION:
         return Object.assign({}, state, {
             description: action.description
+        });
+    case SET_STATS:
+        return Object.assign({}, state, {
+            stats: action.stats
         });
     case ADD_COMPILE_ERROR:
         return Object.assign({}, state, {
@@ -222,6 +234,13 @@ const setDescription = function (description) {
     };
 };
 
+const setStats = function (stats) {
+    return {
+        type: SET_STATS,
+        stats: stats
+    };
+};
+
 const addCompileError = function (error) {
     return {
         type: ADD_COMPILE_ERROR,
@@ -292,6 +311,7 @@ export {
     setDimensions,
     setAuthor,
     setDescription,
+    setStats,
     addCompileError,
     clearCompileErrors,
     setFileHandle,

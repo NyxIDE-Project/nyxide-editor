@@ -4,35 +4,17 @@ import {connect} from 'react-redux';
 import log from './log';
 
 import {setProjectTitle} from '../reducers/project-title';
-import {setAuthor, setDescription} from '../reducers/tw';
+import {setAuthor, setDescription, setStats} from '../reducers/tw';
 
 export const fetchProjectMeta = async projectId => {
-    // When people reopen tabs, sometimes the browser is *very* aggressive about caching even when the
-    // trampoline says not to, so we're going to try putting a cache buster in here.
-    const cacheBuster = `?rudebuster=${Math.random()}`;
-    const urls = [
-        `https://trampoline.turbowarp.org/api/projects/${projectId}${cacheBuster}`,
-        `https://trampoline.turbowarp.xyz/api/projects/${projectId}${cacheBuster}`
-    ];
-    let firstError;
-    for (const url of urls) {
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
-            if (res.ok) {
-                return data;
-            }
-            if (res.status === 404) {
-                throw new Error('Project is probably unshared');
-            }
-            throw new Error(`Unexpected status code: ${res.status}`);
-        } catch (err) {
-            if (!firstError) {
-                firstError = err;
-            }
+    const res = await fetch(`/api/projects/${projectId}`);
+    if (!res.ok) {
+        if (res.status === 404) {
+            throw new Error('Project not found');
         }
+        throw new Error(`Unexpected status code: ${res.status}`);
     }
-    throw firstError;
+    return res.json();
 };
 
 const getNoIndexTag = () => document.querySelector('meta[name="robots"][content="noindex"]');
@@ -57,6 +39,13 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
             if (this.props.reduxProjectId !== prevProps.reduxProjectId) {
                 this.props.onSetAuthor('', '');
                 this.props.onSetDescription('', '');
+                this.props.onSetStats({
+                    viewCount: 0,
+                    likeCount: 0,
+                    favoriteCount: 0,
+                    isLikedByViewer: false,
+                    isFavoritedByViewer: false
+                });
                 const projectId = this.props.reduxProjectId;
 
                 if (projectId === '0') {
@@ -72,21 +61,25 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
                         if (title) {
                             this.props.onSetProjectTitle(title);
                         }
-                        const authorName = data.author.username;
-                        const authorThumbnail = `https://trampoline.turbowarp.org/avatars/${data.author.id}`;
+                        const authorName = data.owner ? data.owner.username : '';
+                        const authorThumbnail = data.owner ? data.owner.avatarUrl : '';
                         this.props.onSetAuthor(authorName, authorThumbnail);
-                        const instructions = data.instructions || '';
-                        const credits = data.description || '';
+                        const instructions = data.description || '';
+                        const credits = data.notesAndCredits || '';
                         if (instructions || credits) {
                             this.props.onSetDescription(instructions, credits);
                         }
+                        this.props.onSetStats({
+                            viewCount: data.viewCount || 0,
+                            likeCount: data.likeCount || 0,
+                            favoriteCount: data.favoriteCount || 0,
+                            isLikedByViewer: Boolean(data.isLikedByViewer),
+                            isFavoritedByViewer: Boolean(data.isFavoritedByViewer)
+                        });
                         setIndexable(true);
                     })
                         .catch(err => {
                             setIndexable(false);
-                            if (`${err}`.includes('unshared')) {
-                                this.props.onSetDescription('unshared', 'unshared');
-                            }
                             log.warn('cannot fetch project meta', err);
                         });
                 }
@@ -98,6 +91,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
                 reduxProjectId,
                 onSetAuthor,
                 onSetDescription,
+                onSetStats,
                 onSetProjectTitle,
                 /* eslint-enable no-unused-vars */
                 ...props
@@ -113,6 +107,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
         reduxProjectId: PropTypes.string,
         onSetAuthor: PropTypes.func,
         onSetDescription: PropTypes.func,
+        onSetStats: PropTypes.func,
         onSetProjectTitle: PropTypes.func
     };
     const mapStateToProps = state => ({
@@ -127,6 +122,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
             instructions,
             credits
         })),
+        onSetStats: stats => dispatch(setStats(stats)),
         onSetProjectTitle: title => dispatch(setProjectTitle(title))
     });
     return connect(

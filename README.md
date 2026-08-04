@@ -2,9 +2,15 @@ scratch-gui modified for use in [TurboWarp](https://turbowarp.org/)
 
 ## Setup
 
-See https://docs.turbowarp.org/development/getting-started to setup the complete TurboWarp environment.
-
-If you just want to play with the GUI then it's the same process as upstream scratch-gui.
+### Editor UI:
+1. Install Dependencies
+```npm install```
+2. Run Frontend ```npm start ```
+### API Backend:
+1. Install Dependencies
+```npm run server:install```
+2. Run Frontend
+```npm run server:dev```
 
 ## License
 

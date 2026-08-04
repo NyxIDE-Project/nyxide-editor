@@ -33,7 +33,7 @@ import GUI from './render-gui.jsx';
 import MenuBar from '../components/menu-bar/menu-bar.jsx';
 import ProjectInput from '../components/tw-project-input/project-input.jsx';
 import FeaturedProjects from '../components/tw-featured-projects/featured-projects.jsx';
-import Description from '../components/tw-description/description.jsx';
+import NyxProjectActions from '../components/menu-bar/nyx-project-actions.jsx';
 import BrowserModal from '../components/browser-modal/browser-modal.jsx';
 import CloudVariableBadge from '../containers/tw-cloud-variable-badge.jsx';
 import TWWindchimeSubmitter from '../containers/tw-windchime-submitter.jsx';
@@ -318,15 +318,11 @@ class Interface extends React.Component {
                                     <CloudVariableBadge />
                                 </div>
                             )}
-                            {description.instructions || description.credits ? (
+                            {projectId !== '0' && (
                                 <div className={styles.section}>
-                                    <Description
-                                        instructions={description.instructions}
-                                        credits={description.credits}
-                                        projectId={projectId}
-                                    />
+                                    <NyxProjectActions />
                                 </div>
-                            ) : null}
+                            )}
                             <div className={styles.section}>
                                 <p>
                                     <FormattedMessage

@@ -1,0 +1,174 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.save-button {
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    height: 2rem;
+    margin-right: 0.5rem;
+    border-radius: $form-radius;
+    background-color: $extensions-primary;
+    color: $ui-white;
+    font-weight: bold;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+
+.save-button[data-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    box-sizing: border-box;
+    background: $ui-white;
+    border-radius: $form-radius;
+    padding: 1.5rem;
+    width: 24rem;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.field-label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.text-input,
+.text-area {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid $ui-black-transparent;
+    border-radius: $form-radius;
+    font-weight: normal;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.error {
+    color: $error-primary;
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.preparing {
+    padding: 1.5rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: $text-primary;
+    opacity: 0.7;
+}
+
+.hidden-input {
+    display: none;
+}
+
+.thumbnail-dropzone {
+    box-sizing: border-box;
+    width: 100%;
+    height: 7rem;
+    margin-top: 0.25rem;
+    border: 2px dashed $ui-black-transparent;
+    border-radius: $form-radius;
+    background: $ui-secondary;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.thumbnail-hint {
+    font-size: 0.7rem;
+    font-weight: normal;
+    color: $text-primary;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+}
+
+.size-bar-track {
+    width: 100%;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: $ui-black-transparent;
+    overflow: hidden;
+    margin-top: 0.35rem;
+}
+
+.size-bar-fill {
+    height: 100%;
+    background: $extensions-primary;
+}
+
+.size-bar-fill-over {
+    height: 100%;
+    background: $error-primary;
+}
+
+.size-text {
+    font-size: 0.7rem;
+    font-weight: normal;
+    color: $text-primary;
+    opacity: 0.7;
+    margin-top: 0.15rem;
+}
+
+.size-text-over {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: $error-primary;
+    margin-top: 0.15rem;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.primary-button,
+.secondary-button {
+    padding: 0.5rem 1rem;
+    border-radius: $form-radius;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+
+.primary-button {
+    background-color: $extensions-primary;
+    color: $ui-white;
+}
+
+.secondary-button {
+    background-color: $ui-secondary;
+}

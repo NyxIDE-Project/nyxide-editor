@@ -1,0 +1,19 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-right: 0.75rem;
+}
+
+.avatar {
+    margin-right: 0.4rem;
+}
+
+.username {
+    font-weight: bold;
+    font-size: $menu-bar-standard-font-size;
+    margin-right: 0.35rem;
+}

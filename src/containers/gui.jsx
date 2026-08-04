@@ -138,7 +138,7 @@ GUI.propTypes = {
 GUI.defaultProps = {
     isScratchDesktop: false,
     isTotallyNormal: false,
-    onStorageInit: storageInstance => storageInstance.addOfficialScratchWebStores(),
+    onStorageInit: storageInstance => storageInstance.addNyxWebStore(),
     onProjectLoaded: () => {},
     onUpdateProjectId: () => {},
     onVmInit: (/* vm */) => {}

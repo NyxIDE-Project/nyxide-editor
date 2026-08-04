@@ -1,0 +1,57 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+.card {
+    display: block;
+    width: 12rem;
+    color: $text-primary;
+    text-decoration: none;
+}
+
+.card:hover {
+    text-decoration: none;
+}
+
+.card:hover .thumbnail,
+.card:hover .thumbnail-placeholder {
+    outline: 2px solid $extensions-primary;
+}
+
+.thumbnail-wrapper {
+    width: 100%;
+    height: 9rem;
+    border-radius: $form-radius;
+    overflow: hidden;
+    background: $ui-secondary;
+}
+
+.thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.thumbnail-placeholder {
+    width: 100%;
+    height: 100%;
+    background: $ui-secondary;
+}
+
+.info {
+    padding: 0.5rem 0.1rem;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.owner {
+    font-size: 0.8rem;
+    color: $text-primary;
+    opacity: 0.7;
+}

@@ -132,7 +132,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                 assetPromise = fetchProjectToken(projectId)
                     .then(token => {
                         storage.setProjectToken(token);
-                        return storage.load(storage.AssetType.Project, projectId, storage.DataFormat.JSON)
+                        return storage.load(storage.AssetType.Project, projectId, storage.DataFormat.SB3)
                             .catch(err => {
                                 throw new ProjectFetchError(`Could not load project: ${err}`);
                             });
@@ -208,7 +208,8 @@ const ProjectFetcherHOC = function (WrappedComponent) {
     };
     ProjectFetcherComponent.defaultProps = {
         assetHost: 'https://assets.scratch.mit.edu',
-        projectHost: 'https://projects.scratch.mit.edu'
+        // nyxide: projects are hosted by our own server, not Scratch's cloud
+        projectHost: '/api/projects'
     };
 
     const mapStateToProps = state => ({

@@ -64,6 +64,9 @@
     align-items: center;
     white-space: nowrap;
     height: $menu-bar-height;
+    /* explicit, not just inherited: a plain <a> tag's own default color otherwise wins
+       over inheritance from $menu-bar-foreground on the ancestor bar */
+    color: inherit;
 }
 
 .menu-bar-item.hoverable {

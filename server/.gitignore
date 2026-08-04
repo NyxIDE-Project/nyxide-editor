@@ -1,0 +1,11 @@
+node_modules/
+data/*.db
+data/*.db-journal
+data/projects/*
+data/thumbnails/*
+data/avatars/*
+data/banners/*
+!data/projects/.gitkeep
+!data/thumbnails/.gitkeep
+!data/avatars/.gitkeep
+!data/banners/.gitkeep

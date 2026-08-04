@@ -1,0 +1,23 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+.follow-button,
+.following-button {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: $form-radius;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.follow-button {
+    background: $extensions-primary;
+    color: $ui-white;
+}
+
+.following-button {
+    background: $ui-secondary;
+    color: $text-primary;
+}

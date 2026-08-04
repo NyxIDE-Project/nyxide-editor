@@ -98,9 +98,13 @@ class HashRouter extends Router {
 class FileHashRouter extends HashRouter {
     constructor (callbacks) {
         super(callbacks);
-        this.playerPath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
-        this.editorPath = `${this.playerPath}editor.html`;
-        this.fullscreenPath = `${this.playerPath}fullscreen.html`;
+        // nyxide: the player/editor/fullscreen pages live at fixed clean paths
+        // (/player, /editor, /fullscreen) rather than at the directory root + *.html,
+        // since "/" is now the community homepage bundle.
+        const root = process.env.ROOT || '/';
+        this.playerPath = `${root}player`;
+        this.editorPath = `${root}editor`;
+        this.fullscreenPath = `${root}fullscreen`;
     }
 
     onpathchange () {

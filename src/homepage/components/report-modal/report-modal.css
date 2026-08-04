@@ -1,0 +1,70 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+.modal-content {
+    width: 26rem;
+    max-width: 90vw;
+    margin-top: 25px;
+}
+
+.body {
+    background: $ui-white;
+    color: $text-primary;
+    padding: 1rem 1.5rem;
+}
+
+.text-area {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid $ui-black-transparent;
+    border-radius: $form-radius;
+    font: inherit;
+    resize: vertical;
+}
+
+.error {
+    color: $error-primary;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.buttons {
+    display: flex;
+    margin-top: 1rem;
+}
+
+.cancel-button,
+.submit-button,
+.done-button {
+    flex-grow: 1;
+    font: inherit;
+    color: inherit;
+    padding: 0.75rem 1rem;
+    border-radius: $form-radius;
+    border: 1px solid $ui-black-transparent;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background-color: $ui-secondary;
+    margin-right: 8px;
+}
+
+.submit-button {
+    background-color: rgb(255, 92, 92);
+    color: white;
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.done-button {
+    background-color: $extensions-primary;
+    color: white;
+    width: 100%;
+}

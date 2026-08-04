@@ -52,20 +52,21 @@ ActualAuthorInfo.propTypes = {
     username: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
 };
 
-const AuthorInfo = ({projectId, ...props}) => (
-    projectId ? (
+const AuthorInfo = ({username, ...props}) => (
+    username ? (
         <a
             className={styles.link}
-            href={`https://scratch.mit.edu/projects/${projectId}`}
-            target="_blank"
-            rel="noreferrer"
+            href={`/users/${username}`}
         >
-            <ActualAuthorInfo {...props} />
+            <ActualAuthorInfo
+                username={username}
+                {...props}
+            />
         </a>
     ) : <ActualAuthorInfo {...props} />
 );
 AuthorInfo.propTypes = {
-    projectId: PropTypes.string
+    username: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
 };
 
 export default AuthorInfo;

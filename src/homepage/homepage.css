@@ -1,0 +1,40 @@
+@import "../css/colors.css";
+@import "../css/units.css";
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: $ui-primary;
+    color: $text-primary;
+}
+
+#app {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: $extensions-primary;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    font-family: inherit;
+}
+
+input,
+textarea {
+    font-family: inherit;
+}

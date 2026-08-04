@@ -1,0 +1,142 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+.layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 48rem;
+    align-items: flex-start;
+}
+
+.media-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 16rem;
+    flex-shrink: 0;
+}
+
+.details-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    flex: 1;
+}
+
+.dropzone-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.hidden-input {
+    display: none;
+}
+
+.dropzone,
+.dropzone-active {
+    box-sizing: border-box;
+    border: 2px dashed $ui-black-transparent;
+    border-radius: $form-radius;
+    padding: 1rem;
+    cursor: pointer;
+    text-align: center;
+    background: $ui-secondary;
+}
+
+.dropzone-active {
+    border-color: $extensions-primary;
+    background: $extensions-transparent;
+}
+
+.thumbnail-dropzone,
+.thumbnail-dropzone-active {
+    box-sizing: border-box;
+    border: 2px dashed $ui-black-transparent;
+    border-radius: $form-radius;
+    cursor: pointer;
+    background: $ui-secondary;
+    width: 100%;
+    height: 9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.thumbnail-dropzone-active {
+    border-color: $extensions-primary;
+    background: $extensions-transparent;
+}
+
+.thumbnail-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.dropzone-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: $text-primary;
+    opacity: 0.7;
+    padding: 0.75rem;
+}
+
+.dropzone-icon {
+    font-size: 1.75rem;
+}
+
+.dropzone-hint {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.file-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: left;
+}
+
+.file-name {
+    font-weight: bold;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.size-bar-track {
+    width: 100%;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: $ui-black-transparent;
+    overflow: hidden;
+}
+
+.size-bar-fill {
+    height: 100%;
+    background: $extensions-primary;
+}
+
+.size-bar-fill-over {
+    height: 100%;
+    background: $error-primary;
+}
+
+.size-text {
+    font-size: 0.75rem;
+    color: $text-primary;
+    opacity: 0.7;
+}
+
+.size-text-over {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: $error-primary;
+}

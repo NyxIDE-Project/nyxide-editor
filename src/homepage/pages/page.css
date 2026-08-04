@@ -1,0 +1,103 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.heading {
+    font-size: 1.4rem;
+    margin: 0 0 1rem 0;
+}
+
+.loading {
+    color: $text-primary;
+    opacity: 0.7;
+    padding: 2rem 0;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    max-width: 28rem;
+    gap: 0.9rem;
+}
+
+.field-label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    font-size: 0.85rem;
+    gap: 0.3rem;
+}
+
+.text-input,
+.text-area {
+    padding: 0.55rem 0.7rem;
+    border: 1px solid $ui-black-transparent;
+    border-radius: $form-radius;
+    font-weight: normal;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+.submit-button {
+    align-self: flex-start;
+    background: $extensions-primary;
+    color: $ui-white;
+    font-weight: bold;
+    padding: 0.55rem 1.4rem;
+    border-radius: $form-radius;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.error {
+    color: $error-primary;
+    font-size: 0.85rem;
+}
+
+.banner-preview {
+    width: 100%;
+    max-width: 24rem;
+    height: 7rem;
+    object-fit: cover;
+    border-radius: $form-radius;
+    background: $ui-secondary;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.featured-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-radius: $form-radius;
+    background: $ui-secondary;
+}
+
+.featured-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.1rem;
+    margin: 0 0 1rem 0;
+}
+
+.featured-star {
+    color: goldenrod;
+}
+
+.pagination-button {
+    padding: 0.4rem 1rem;
+    border-radius: $form-radius;
+    background: $ui-secondary;
+    cursor: pointer;
+    font-size: 0.85rem;
+}

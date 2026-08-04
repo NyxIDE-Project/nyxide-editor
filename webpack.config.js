@@ -14,7 +14,10 @@ const postcssImport = require('postcss-import');
 const STATIC_PATH = process.env.STATIC_PATH || '/static';
 const {APP_NAME} = require('./src/lib/brand');
 
-const root = process.env.ROOT || '';
+// nyxide: default to an absolute root ("/") rather than relative (""). Relative asset paths
+// break once a route has real path depth (e.g. /users/alice resolves "js/x.js" to
+// "/users/js/x.js"), which the homepage's client-side routes introduce.
+const root = process.env.ROOT || '/';
 if (root.length > 0 && !root.endsWith('/')) {
     throw new Error('If ROOT is defined, it must have a trailing slash.');
 }
@@ -37,14 +40,28 @@ const base = {
         disableHostCheck: true,
         compress: true,
         port: process.env.PORT || 8601,
-        // allows ROUTING_STYLE=wildcard to work properly
+        proxy: {
+            '/api': {
+                target: `http://localhost:${process.env.SERVER_PORT || 8602}`,
+                changeOrigin: true
+            }
+        },
         historyApiFallback: {
             rewrites: [
-                {from: /^\/\d+\/?$/, to: '/index.html'},
+                // allows ROUTING_STYLE=wildcard to work properly
+                {from: /^\/\d+\/?$/, to: '/player.html'},
                 {from: /^\/\d+\/fullscreen\/?$/, to: '/fullscreen.html'},
                 {from: /^\/\d+\/editor\/?$/, to: '/editor.html'},
                 {from: /^\/\d+\/embed\/?$/, to: '/embed.html'},
-                {from: /^\/addons\/?$/, to: '/addons.html'}
+                {from: /^\/addons\/?$/, to: '/addons.html'},
+                // clean paths for the community homepage's player/editor links
+                {from: /^\/player\/?$/, to: '/player.html'},
+                {from: /^\/editor\/?$/, to: '/editor.html'},
+                // everything else under nyxide's own routes falls back to the homepage SPA
+                {
+                    from: /^\/(explore|search|users|upload|my-projects|projects|settings|login|register|admin)(\/.*)?$/,
+                    to: '/index.html'
+                }
             ]
         }
     },
@@ -147,7 +164,8 @@ module.exports = [
             'fullscreen': './src/playground/fullscreen.jsx',
             'embed': './src/playground/embed.jsx',
             'addon-settings': './src/playground/addon-settings.jsx',
-            'credits': './src/playground/credits/credits.jsx'
+            'credits': './src/playground/credits/credits.jsx',
+            'homepage': './src/homepage/index.jsx'
         },
         output: {
             path: path.resolve(__dirname, 'build')
@@ -193,8 +211,15 @@ module.exports = [
             new HtmlWebpackPlugin({
                 chunks: ['player'],
                 template: 'src/playground/index.ejs',
-                filename: 'index.html',
+                filename: 'player.html',
                 title: `${APP_NAME} - Run Scratch projects faster`,
+                ...htmlWebpackPluginCommon
+            }),
+            new HtmlWebpackPlugin({
+                chunks: ['homepage'],
+                template: 'src/homepage/homepage.ejs',
+                filename: 'index.html',
+                title: APP_NAME,
                 ...htmlWebpackPluginCommon
             }),
             new HtmlWebpackPlugin({
