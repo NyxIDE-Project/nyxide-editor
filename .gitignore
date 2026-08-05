@@ -26,3 +26,7 @@ npm-*
 
 # for act
 .secrets
+
+# Database
+nyxide.db-shm
+nyxide.db-wal
