@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script>
+      (function () {
+        var staticPages = {
+          '/editor': '/editor.html',
+          '/player': '/player.html',
+          '/fullscreen': '/fullscreen.html',
+          '/embed': '/embed.html',
+          '/addons': '/addons.html',
+          '/credits': '/credits.html'
+        };
+        var path = location.pathname.replace(/\/$/, '') || '/';
+        var rest = location.search + location.hash;
+        if (staticPages[path]) {
+          location.replace(staticPages[path] + rest);
+          return;
+        }
+        try {
+          sessionStorage.setItem('spa-redirect-path', location.pathname + rest);
+        } catch (e) {}
+        location.replace('/');
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
