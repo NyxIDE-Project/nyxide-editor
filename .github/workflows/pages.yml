@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+# Runs on every push and pull request so a broken build shows up on PRs too, but only the
+# "push" runs actually publish - publishing a PR's unmerged code to the live "pages" branch
+# would just get overwritten by the next push anyway, and fork PRs don't have the write-access
+# token needed to push to it.
+on:
+  push:
+  pull_request:
+
+# Cancel an in-progress deploy if a newer push/PR comes in, so two runs can't race to push to
+# the pages branch at the same time.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+          # GitHub Pages serves a project repo at /<repo-name>/, so assets need to be
+          # requested from that subpath instead of from the domain root. If you're using a
+          # custom domain or a <user>.github.io root repo instead, set this to "/".
+          ROOT: /${{ github.event.repository.name }}/
+      - name: Deploy to pages branch
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          publish_branch: pages
