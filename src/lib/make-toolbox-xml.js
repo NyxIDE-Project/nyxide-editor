@@ -686,6 +686,7 @@ const operators = function (isInitialSetup, isStage, targetId, colors) {
                 </shadow>
               </value>
             </block>
+            <block type="operator_newline" id="operator_newline"></block>
         `}
         ${blockSeparator}
         <block type="operator_mod">
