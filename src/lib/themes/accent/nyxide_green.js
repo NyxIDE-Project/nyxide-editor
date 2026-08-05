@@ -17,8 +17,8 @@ const guiColors = {
 };
 
 const blockColors = {
-    checkboxActiveBackground: '#ff4c4c',
-    checkboxActiveBorder: '#cc3333'
+    checkboxActiveBackground: '#4cffa5',
+    checkboxActiveBorder: '#33cc9e'
 };
 
 export {

@@ -1,0 +1,61 @@
+@import "../../../css/colors.css";
+
+.footer {
+    width: 100%;
+    margin-top: 2rem;
+    border-top: 1px solid $ui-black-transparent;
+    background: $ui-secondary;
+}
+
+.inner {
+    box-sizing: border-box;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 1.5rem;
+}
+
+.columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    min-width: 9rem;
+}
+
+.column-heading {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: $text-primary;
+    opacity: 0.6;
+    margin-bottom: 0.6rem;
+}
+
+.link {
+    color: $text-primary;
+    opacity: 0.85;
+    font-size: 0.9rem;
+    padding: 0.25rem 0;
+    text-decoration: none;
+}
+
+.link:hover {
+    opacity: 1;
+    color: $extensions-primary;
+    text-decoration: underline;
+}
+
+.bottom-row {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid $ui-black-transparent;
+    font-size: 0.75rem;
+    color: $text-primary;
+    opacity: 0.5;
+    text-align: center;
+}

@@ -52,6 +52,14 @@ a {
     height: 100%;
 }
 
+/* Unlike .editor, this page is a normal scrolling document rather than a fixed-size app
+   shell, so a min-height (not height) plus flex is enough to keep .footer pinned to the
+   bottom of the viewport on short pages without it needing to grow to fill anything. */
+.player-only {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 .player-only .center {
     margin: auto;
 }
@@ -64,7 +72,7 @@ a {
 
 .footer {
     padding: 10px 0;
-    margin-top: 10px;
+    margin-top: auto;
     border-top: 2px solid $ui-black-transparent;
 }
 .footer a {
@@ -93,6 +101,14 @@ a {
 }
 .footer-section > * {
     margin-bottom: 10px;
+}
+.footer-section-heading {
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: $text-primary;
+    opacity: 0.6;
 }
 
 .infobox {

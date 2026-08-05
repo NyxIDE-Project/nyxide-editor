@@ -5,6 +5,11 @@ const statements = {
         INSERT INTO events (title, content, created_by) VALUES (?, ?, ?)
     `),
     getById: db.prepare('SELECT * FROM events WHERE id = ?'),
+    update: db.prepare(`
+        UPDATE events
+        SET title = ?, content = ?, updated_at = datetime('now')
+        WHERE id = ?
+    `),
     delete: db.prepare('DELETE FROM events WHERE id = ?'),
     listRecent: db.prepare('SELECT * FROM events ORDER BY created_at DESC LIMIT ?')
 };
@@ -16,6 +21,11 @@ const create = ({title, content, createdBy}) => {
 
 const getById = id => statements.getById.get(id);
 
+const update = (id, {title, content}) => {
+    statements.update.run(title, content, id);
+    return statements.getById.get(id);
+};
+
 const remove = id => statements.delete.run(id);
 
 const listRecent = (limit = 10) => statements.listRecent.all(limit);
@@ -23,6 +33,7 @@ const listRecent = (limit = 10) => statements.listRecent.all(limit);
 module.exports = {
     create,
     getById,
+    update,
     remove,
     listRecent
 };

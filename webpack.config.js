@@ -59,7 +59,8 @@ const base = {
                 {from: /^\/editor\/?$/, to: '/editor.html'},
                 // everything else under nyxide's own routes falls back to the homepage SPA
                 {
-                    from: /^\/(explore|search|users|upload|my-projects|projects|settings|login|register|admin)(\/.*)?$/,
+                    // eslint-disable-next-line max-len
+                    from: /^\/(explore|search|users|upload|my-projects|projects|settings|login|register|admin|terms|privacy|guidelines)(\/.*)?$/,
                     to: '/index.html'
                 }
             ]

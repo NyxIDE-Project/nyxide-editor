@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {get, postJson, del} from '../../lib/api';
+import {get, postJson, putJson, del} from '../../lib/api';
 import ConfirmModal from '../../components/confirm-modal/confirm-modal.jsx';
 
 import pageStyles from '../page.css';
@@ -12,6 +12,7 @@ class AdminEventsTab extends React.Component {
         this.state = {
             items: [],
             loading: true,
+            editId: null,
             title: '',
             content: '',
             isSaving: false,
@@ -21,6 +22,7 @@ class AdminEventsTab extends React.Component {
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleContentChange = this.handleContentChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleCancelEdit = this.handleCancelEdit.bind(this);
     }
     componentDidMount () {
         this.load();
@@ -37,15 +39,27 @@ class AdminEventsTab extends React.Component {
     handleContentChange (e) {
         this.setState({content: e.target.value});
     }
+    startEdit (event) {
+        this.setState({
+            editId: event.id,
+            title: event.title,
+            content: event.content,
+            error: null
+        });
+    }
+    handleCancelEdit () {
+        this.setState({editId: null, title: '', content: '', error: null});
+    }
     handleSubmit (e) {
         e.preventDefault();
         this.setState({isSaving: true, error: null});
-        postJson('/api/admin/events', {
-            title: this.state.title,
-            content: this.state.content
-        })
+        const body = {title: this.state.title, content: this.state.content};
+        const request = this.state.editId ?
+            putJson(`/api/admin/events/${this.state.editId}`, body) :
+            postJson('/api/admin/events', body);
+        request
             .then(() => {
-                this.setState({title: '', content: '', isSaving: false});
+                this.setState({editId: null, title: '', content: '', isSaving: false});
                 this.load();
             })
             .catch(err => this.setState({isSaving: false, error: err.message}));
@@ -53,12 +67,15 @@ class AdminEventsTab extends React.Component {
     deleteEvent (id) {
         del(`/api/admin/events/${id}`)
             .then(() => {
-                this.setState({deleteTarget: null});
+                const clearedEdit = this.state.editId === id ?
+                    {editId: null, title: '', content: ''} : {};
+                this.setState({...clearedEdit, deleteTarget: null});
                 this.load();
             })
             .catch(err => this.setState({error: err.message, deleteTarget: null}));
     }
     render () {
+        const isEditing = this.state.editId !== null;
         return (
             <div>
                 <p>
@@ -70,7 +87,7 @@ class AdminEventsTab extends React.Component {
                     onSubmit={this.handleSubmit}
                 >
                     <label className={pageStyles.fieldLabel}>
-                        Title
+                        {'Title'}
                         <input
                             className={pageStyles.textInput}
                             type="text"
@@ -79,7 +96,7 @@ class AdminEventsTab extends React.Component {
                         />
                     </label>
                     <label className={pageStyles.fieldLabel}>
-                        Content (Markdown)
+                        {'Content (Markdown)'}
                         <textarea
                             className={pageStyles.textArea}
                             rows={8}
@@ -90,26 +107,40 @@ class AdminEventsTab extends React.Component {
                     {this.state.error && (
                         <div className={pageStyles.error}>{this.state.error}</div>
                     )}
-                    <button
-                        className={pageStyles.submitButton}
-                        type="submit"
-                        disabled={this.state.isSaving || !this.state.title.trim() || !this.state.content.trim()}
-                    >
-                        {this.state.isSaving ? 'Publishing…' : 'Publish Event'}
-                    </button>
+                    <div className={styles.rowActions}>
+                        <button
+                            className={pageStyles.submitButton}
+                            type="submit"
+                            disabled={this.state.isSaving || !this.state.title.trim() || !this.state.content.trim()}
+                        >
+                            {this.state.isSaving ?
+                                'Saving…' :
+                                (isEditing ? 'Save Changes' : 'Publish Event')}
+                        </button>
+                        {isEditing && (
+                            <button
+                                className={styles.smallButton}
+                                type="button"
+                                onClick={this.handleCancelEdit}
+                                disabled={this.state.isSaving}
+                            >
+                                {'Cancel'}
+                            </button>
+                        )}
+                    </div>
                 </form>
 
-                <h2 className={pageStyles.heading}>Published Events</h2>
+                <h2 className={pageStyles.heading}>{'Published Events'}</h2>
                 {this.state.loading ? (
-                    <p>Loading…</p>
+                    <p>{'Loading…'}</p>
                 ) : (
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Published</th>
-                                <th>Actions</th>
+                                <th>{'Title'}</th>
+                                <th>{'Author'}</th>
+                                <th>{'Published'}</th>
+                                <th>{'Actions'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -117,14 +148,25 @@ class AdminEventsTab extends React.Component {
                                 <tr key={event.id}>
                                     <td>{event.title}</td>
                                     <td>{event.author ? `@${event.author.username}` : '—'}</td>
-                                    <td>{new Date(event.createdAt.replace(' ', 'T') + 'Z').toLocaleDateString()}</td>
                                     <td>
-                                        <button
-                                            className={styles.smallButtonDanger}
-                                            onClick={() => this.setState({deleteTarget: event})}
-                                        >
-                                            Delete
-                                        </button>
+                                        {new Date(`${event.createdAt.replace(' ', 'T')}Z`).toLocaleDateString()}
+                                        {event.updatedAt && ' (edited)'}
+                                    </td>
+                                    <td>
+                                        <div className={styles.rowActions}>
+                                            <button
+                                                className={styles.smallButton}
+                                                onClick={() => this.startEdit(event)}
+                                            >
+                                                {'Edit'}
+                                            </button>
+                                            <button
+                                                className={styles.smallButtonDanger}
+                                                onClick={() => this.setState({deleteTarget: event})}
+                                            >
+                                                {'Delete'}
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -132,7 +174,7 @@ class AdminEventsTab extends React.Component {
                     </table>
                 )}
                 {!this.state.loading && this.state.items.length === 0 && (
-                    <p>No events published yet.</p>
+                    <p>{'No events published yet.'}</p>
                 )}
                 {this.state.deleteTarget && (
                     <ConfirmModal

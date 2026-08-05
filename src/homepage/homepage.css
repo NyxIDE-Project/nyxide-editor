@@ -15,7 +15,10 @@ body {
     color: $text-primary;
 }
 
-#app {
+/* :global is required here - this build runs every .css file through CSS Modules, which
+   would otherwise hash #app into a name that no longer matches the real id="app" element
+   the app is rendered into (see src/playground/app-target.js), silently breaking this rule. */
+:global(#app) {
     min-height: 100%;
     display: flex;
     flex-direction: column;

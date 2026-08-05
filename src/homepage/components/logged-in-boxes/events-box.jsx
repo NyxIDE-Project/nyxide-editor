@@ -29,7 +29,7 @@ class EventsBox extends React.Component {
                     ) : this.state.error ? (
                         <div className={styles.boxMessage}>{'Could not load events.'}</div>
                     ) : this.state.items.length === 0 ? (
-                        <div className={styles.boxMessage}>{'Nothing going on right now - check back soon!'}</div>
+                        <div className={styles.boxMessage}>{'Nothing going on right now, check back soon!'}</div>
                     ) : (
                         this.state.items.map(event => (
                             <div

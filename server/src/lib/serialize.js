@@ -85,7 +85,8 @@ const serializeEvent = (event, author) => ({
     title: event.title,
     content: event.content,
     author: author ? {id: author.id, username: author.username} : null,
-    createdAt: event.created_at
+    createdAt: event.created_at,
+    updatedAt: event.updated_at === event.created_at ? null : event.updated_at
 });
 
 module.exports = {

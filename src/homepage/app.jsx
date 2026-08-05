@@ -3,6 +3,7 @@ import {Route, Switch} from 'react-router-dom';
 
 import Topbar from './components/topbar/topbar.jsx';
 import HeroBanner from './components/hero-banner/hero-banner.jsx';
+import Footer from './components/footer/footer.jsx';
 import HomePage from './pages/home/home-page.jsx';
 import ExplorePage from './pages/explore/explore-page.jsx';
 import SearchPage from './pages/search/search-page.jsx';
@@ -14,6 +15,9 @@ import SettingsPage from './pages/settings/settings-page.jsx';
 import LoginPage from './pages/login/login-page.jsx';
 import RegisterPage from './pages/register/register-page.jsx';
 import AdminPage from './pages/admin/admin-page.jsx';
+import TermsPage from './pages/legal/terms-page.jsx';
+import PrivacyPage from './pages/legal/privacy-page.jsx';
+import GuidelinesPage from './pages/legal/guidelines-page.jsx';
 
 import styles from './app.css';
 
@@ -78,8 +82,24 @@ const App = () => (
                     path="/users/:username"
                     component={ProfilePage}
                 />
+                <Route
+                    exact
+                    path="/terms"
+                    component={TermsPage}
+                />
+                <Route
+                    exact
+                    path="/privacy"
+                    component={PrivacyPage}
+                />
+                <Route
+                    exact
+                    path="/guidelines"
+                    component={GuidelinesPage}
+                />
             </Switch>
         </main>
+        <Footer />
     </React.Fragment>
 );
 

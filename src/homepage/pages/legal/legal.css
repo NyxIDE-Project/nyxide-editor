@@ -1,0 +1,31 @@
+@import "../../../css/colors.css";
+
+.page {
+    max-width: 42rem;
+    line-height: 1.5;
+}
+
+.updated {
+    font-size: 0.8rem;
+    color: $text-primary;
+    opacity: 0.6;
+    margin: -0.5rem 0 1.5rem;
+}
+
+.page h2 {
+    font-size: 1.1rem;
+    margin: 1.75rem 0 0.5rem;
+}
+
+.page p {
+    margin: 0 0 0.9rem;
+}
+
+.page ul {
+    margin: 0 0 0.9rem;
+    padding-left: 1.3rem;
+}
+
+.page li {
+    margin-bottom: 0.4rem;
+}

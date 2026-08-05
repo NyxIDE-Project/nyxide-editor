@@ -109,7 +109,8 @@ db.exec(`
         title TEXT NOT NULL,
         content TEXT NOT NULL DEFAULT '',
         created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
     CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id);
@@ -135,6 +136,7 @@ addColumnIfMissing('users', 'ban_reason', 'TEXT');
 addColumnIfMissing('users', 'banner_path', 'TEXT');
 addColumnIfMissing('users', 'email', 'TEXT COLLATE NOCASE');
 addColumnIfMissing('users', 'username_changed_at', 'INTEGER');
+addColumnIfMissing('events', 'updated_at', "TEXT NOT NULL DEFAULT (datetime('now'))");
 
 // Created here (not in the main CREATE TABLE block above) because on an existing database
 // the users.email column above is only added by the migration line just before this, and

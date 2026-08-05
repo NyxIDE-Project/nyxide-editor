@@ -9,6 +9,7 @@ import dataURItoBlob from '../../lib/data-uri-to-blob';
 import {formatBytes} from '../../lib/tw-bytes-utils';
 import {MAX_UPLOAD_BYTES} from '../../lib/nyxide-constants';
 import {setProjectId} from '../../reducers/project-state';
+import TagInput from '../../homepage/components/tag-input/tag-input.jsx';
 
 import styles from './nyx-save-button.css';
 
@@ -48,6 +49,11 @@ const messages = defineMessages({
         defaultMessage: 'Notes and Credits',
         description: 'Label for the notes and credits field in the first-save dialog'
     },
+    tagsLabel: {
+        id: 'nyx.saveButton.tagsLabel',
+        defaultMessage: 'Tags',
+        description: 'Label for the tags field in the first-save dialog'
+    },
     thumbnailLabel: {
         id: 'nyx.saveButton.thumbnailLabel',
         defaultMessage: 'Thumbnail',
@@ -85,6 +91,7 @@ class NyxSaveButton extends React.Component {
             'handleTitleChange',
             'handleDescriptionChange',
             'handleNotesChange',
+            'handleTagsChange',
             'handleThumbnailClick',
             'handleThumbnailChange',
             'handleThumbnailDrop'
@@ -102,6 +109,7 @@ class NyxSaveButton extends React.Component {
             title: '',
             description: '',
             notesAndCredits: '',
+            tags: [],
             thumbnailPreviewUrl: null,
             customThumbnailFile: null,
             fileSize: 0
@@ -138,6 +146,7 @@ class NyxSaveButton extends React.Component {
                 title: this.props.projectTitle || '',
                 description: '',
                 notesAndCredits: '',
+                tags: [],
                 customThumbnailFile: null,
                 thumbnailPreviewUrl: null,
                 error: null
@@ -205,6 +214,9 @@ class NyxSaveButton extends React.Component {
     handleNotesChange (e) {
         this.setState({notesAndCredits: e.target.value});
     }
+    handleTagsChange (tags) {
+        this.setState({tags});
+    }
     handleThumbnailClick () {
         this.thumbnailInputRef.current.click();
     }
@@ -238,6 +250,7 @@ class NyxSaveButton extends React.Component {
             formData.append('title', this.state.title || this.props.projectTitle || 'Untitled');
             formData.append('description', this.state.description);
             formData.append('notesAndCredits', this.state.notesAndCredits);
+            formData.append('tags', JSON.stringify(this.state.tags));
             const res = await fetch('/api/projects', {
                 method: 'POST',
                 credentials: 'include',
@@ -353,6 +366,13 @@ class NyxSaveButton extends React.Component {
                                             onChange={this.handleNotesChange}
                                         />
                                     </label>
+                                    <div className={styles.fieldLabel}>
+                                        {intl.formatMessage(messages.tagsLabel)}
+                                        <TagInput
+                                            tags={this.state.tags}
+                                            onChange={this.handleTagsChange}
+                                        />
+                                    </div>
                                 </React.Fragment>
                             )}
                             {this.state.error && (

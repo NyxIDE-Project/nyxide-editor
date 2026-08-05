@@ -196,6 +196,24 @@ router.post('/events', (req, res) => {
     res.status(201).json(serializeEvent(event, req.user));
 });
 
+router.put('/events/:id', (req, res) => {
+    const event = eventsModel.getById(req.params.id);
+    if (!event) {
+        return res.status(404).json({error: 'Event not found'});
+    }
+    const title = typeof req.body.title === 'string' ? req.body.title.trim().slice(0, 200) : '';
+    const content = typeof req.body.content === 'string' ? req.body.content.slice(0, 20000) : '';
+    if (!title) {
+        return res.status(400).json({error: 'A title is required'});
+    }
+    if (!content.trim()) {
+        return res.status(400).json({error: 'Content is required'});
+    }
+    const updated = eventsModel.update(event.id, {title, content});
+    const author = updated.created_by ? usersModel.getById(updated.created_by) : null;
+    res.json(serializeEvent(updated, author));
+});
+
 router.delete('/events/:id', (req, res) => {
     const event = eventsModel.getById(req.params.id);
     if (!event) {

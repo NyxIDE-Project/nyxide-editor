@@ -121,66 +121,80 @@ const Footer = () => (
 
             <div className={styles.footerColumns}>
                 <div className={styles.footerSection}>
-                    <a href="credits.html">
+                    <div className={styles.footerSectionHeading}>
                         <FormattedMessage
-                            defaultMessage="Credits"
-                            description="Credits link in footer"
-                            id="tw.footer.credits"
+                            defaultMessage="Website"
+                            description="Heading for footer links to the editor, homepage, and player"
+                            id="tw.footer.websiteHeading"
+                        />
+                    </div>
+                    <a href="/editor">
+                        <FormattedMessage
+                            defaultMessage="Editor"
+                            description="Link in footer to the project editor"
+                            id="tw.footer.editor"
+                        />
+                    </a>
+                    <a href="/">
+                        <FormattedMessage
+                            defaultMessage="Homepage"
+                            description="Link in footer to the site homepage"
+                            id="tw.footer.homepage"
+                        />
+                    </a>
+                    <a href="/player">
+                        <FormattedMessage
+                            defaultMessage="Player"
+                            description="Link in footer to the standalone project player"
+                            id="tw.footer.player"
                         />
                     </a>
                 </div>
                 <div className={styles.footerSection}>
-                    <a href="https://desktop.turbowarp.org/">
-                        {/* Do not translate */}
-                        {'TurboWarp Desktop'}
-                    </a>
-                    <a href="https://packager.turbowarp.org/">
-                        {/* Do not translate */}
-                        {'TurboWarp Packager'}
-                    </a>
-                    <a href="https://docs.turbowarp.org/embedding">
+                    <div className={styles.footerSectionHeading}>
                         <FormattedMessage
-                            defaultMessage="Embedding"
-                            description="Link in footer to embedding documentation for embedding link"
-                            id="tw.footer.embed"
+                            defaultMessage="Info"
+                            description="Heading for footer links to terms, privacy, and uploading guidelines"
+                            id="tw.footer.infoHeading"
+                        />
+                    </div>
+                    <a href="/terms">
+                        <FormattedMessage
+                            defaultMessage="Terms of Service"
+                            description="Link to terms of service"
+                            id="tw.footer.terms"
                         />
                     </a>
-                    <a href="https://docs.turbowarp.org/url-parameters">
-                        <FormattedMessage
-                            defaultMessage="URL Parameters"
-                            description="Link in footer to URL parameters documentation"
-                            id="tw.footer.parameters"
-                        />
-                    </a>
-                    <a href="https://docs.turbowarp.org/">
-                        <FormattedMessage
-                            defaultMessage="Documentation"
-                            description="Link in footer to additional documentation"
-                            id="tw.footer.documentation"
-                        />
-                    </a>
-                </div>
-                <div className={styles.footerSection}>
-                    <a href="https://scratch.mit.edu/users/GarboMuffin/#comments">
-                        <FormattedMessage
-                            defaultMessage="Feedback & Bugs"
-                            description="Link to feedback/bugs page"
-                            id="tw.feedback"
-                        />
-                    </a>
-                    <a href="https://github.com/TurboWarp/">
-                        <FormattedMessage
-                            defaultMessage="Source Code"
-                            description="Link to source code"
-                            id="tw.code"
-                        />
-                    </a>
-                    <a href="privacy.html">
+                    <a href="/privacy">
                         <FormattedMessage
                             defaultMessage="Privacy Policy"
                             description="Link to privacy policy"
                             id="tw.privacy"
                         />
+                    </a>
+                    <a href="/guidelines">
+                        <FormattedMessage
+                            defaultMessage="Uploading Guidelines"
+                            description="Link to uploading guidelines"
+                            id="tw.footer.guidelines"
+                        />
+                    </a>
+                </div>
+                <div className={styles.footerSection}>
+                    <div className={styles.footerSectionHeading}>
+                        <FormattedMessage
+                            defaultMessage="Community"
+                            description="Heading for footer links to community spaces such as Discord"
+                            id="tw.footer.communityHeading"
+                        />
+                    </div>
+                    <a
+                        href="https://discord.gg/mYdcjn6YMV"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        {/* Do not translate */}
+                        {'Discord'}
                     </a>
                 </div>
             </div>
