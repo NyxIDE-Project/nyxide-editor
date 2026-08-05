@@ -94,6 +94,26 @@
     color: goldenrod;
 }
 
+.section-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.section-heading-row .heading,
+.section-heading-row .featured-heading {
+    margin-bottom: 0;
+}
+
+.show-all-link {
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: $extensions-primary;
+    margin-bottom: 1rem;
+}
+
 .pagination-button {
     padding: 0.4rem 1rem;
     border-radius: $form-radius;

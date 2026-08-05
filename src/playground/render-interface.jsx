@@ -32,8 +32,10 @@ import '../lib/tw-fix-history-api';
 import GUI from './render-gui.jsx';
 import MenuBar from '../components/menu-bar/menu-bar.jsx';
 import ProjectInput from '../components/tw-project-input/project-input.jsx';
-import FeaturedProjects from '../components/tw-featured-projects/featured-projects.jsx';
+import NyxFeaturedProjects from '../components/tw-featured-projects/nyx-featured-projects.jsx';
+import UntrustedExtensionsWarning from '../components/tw-untrusted-extensions/untrusted-extensions-warning.jsx';
 import NyxProjectActions from '../components/menu-bar/nyx-project-actions.jsx';
+import ProjectTags from '../components/tw-project-tags/project-tags.jsx';
 import BrowserModal from '../components/browser-modal/browser-modal.jsx';
 import CloudVariableBadge from '../containers/tw-cloud-variable-badge.jsx';
 import TWWindchimeSubmitter from '../containers/tw-windchime-submitter.jsx';
@@ -218,6 +220,7 @@ class Interface extends React.Component {
             isPlayerOnly,
             isRtl,
             projectId,
+            vm,
             /* eslint-enable no-unused-vars */
             ...props
         } = this.props;
@@ -261,6 +264,15 @@ class Interface extends React.Component {
                         <React.Fragment>
                             {isBrowserSupported() ? null : (
                                 <BrowserModal isRtl={isRtl} />
+                            )}
+                            {projectId !== '0' && (
+                                <div className={styles.section}>
+                                    <UntrustedExtensionsWarning
+                                        vm={vm}
+                                        isLoading={isLoading}
+                                        projectId={projectId}
+                                    />
+                                </div>
                             )}
                             <div className={styles.section}>
                                 <ProjectInput />
@@ -323,11 +335,16 @@ class Interface extends React.Component {
                                     <NyxProjectActions />
                                 </div>
                             )}
+                            {projectId !== '0' && (
+                                <div className={styles.section}>
+                                    <ProjectTags />
+                                </div>
+                            )}
                             <div className={styles.section}>
                                 <p>
                                     <FormattedMessage
                                         // eslint-disable-next-line max-len
-                                        defaultMessage="{APP_NAME} is a Scratch mod that compiles projects to JavaScript to make them run really fast. Try it out by inputting a project ID or URL above or choosing a featured project below."
+                                        defaultMessage="{APP_NAME} is a TurboWarp mod that allows you to build and upload projects with custom extensions and features."
                                         description="Description of TurboWarp on the homepage"
                                         id="tw.home.description"
                                         values={{
@@ -337,7 +354,7 @@ class Interface extends React.Component {
                                 </p>
                             </div>
                             <div className={styles.section}>
-                                <FeaturedProjects studio="27205657" />
+                                <NyxFeaturedProjects />
                             </div>
                         </React.Fragment>
                     ) : null}
@@ -363,7 +380,9 @@ Interface.propTypes = {
     isLoading: PropTypes.bool,
     isPlayerOnly: PropTypes.bool,
     isRtl: PropTypes.bool,
-    projectId: PropTypes.string
+    projectId: PropTypes.string,
+    // eslint-disable-next-line react/forbid-prop-types
+    vm: PropTypes.object
 };
 
 const mapStateToProps = state => ({
@@ -374,6 +393,7 @@ const mapStateToProps = state => ({
     isLoading: getIsLoading(state.scratchGui.projectState.loadingState),
     isPlayerOnly: state.scratchGui.mode.isPlayerOnly,
     isRtl: state.locales.isRtl,
+    vm: state.scratchGui.vm,
     projectId: state.scratchGui.projectState.projectId
 });
 

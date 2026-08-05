@@ -5,6 +5,7 @@ import {AuthContext} from '../../contexts/auth-context.jsx';
 import {postForm} from '../../lib/api';
 import {MAX_UPLOAD_BYTES} from '../../../lib/nyxide-constants';
 import {formatBytes} from '../../../lib/tw-bytes-utils';
+import TagInput from '../../components/tag-input/tag-input.jsx';
 
 import pageStyles from '../page.css';
 import styles from './upload-page.css';
@@ -16,6 +17,7 @@ class UploadPage extends React.Component {
             title: '',
             description: '',
             notesAndCredits: '',
+            tags: [],
             file: null,
             thumbnail: null,
             thumbnailPreviewUrl: null,
@@ -30,6 +32,7 @@ class UploadPage extends React.Component {
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleNotesChange = this.handleNotesChange.bind(this);
+        this.handleTagsChange = this.handleTagsChange.bind(this);
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
         this.handleThumbnailInputChange = this.handleThumbnailInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -73,6 +76,9 @@ class UploadPage extends React.Component {
     handleNotesChange (e) {
         this.setState({notesAndCredits: e.target.value});
     }
+    handleTagsChange (tags) {
+        this.setState({tags});
+    }
     handleFileInputChange (e) {
         this.setFile(e.target.files[0]);
     }
@@ -108,6 +114,7 @@ class UploadPage extends React.Component {
         formData.append('title', this.state.title || 'Untitled');
         formData.append('description', this.state.description);
         formData.append('notesAndCredits', this.state.notesAndCredits);
+        formData.append('tags', JSON.stringify(this.state.tags));
         postForm('/api/projects', formData)
             .then(project => this.setState({redirectTo: `/player#${project.id}`}))
             .catch(err => this.setState({isSubmitting: false, error: err.message}));
@@ -256,6 +263,13 @@ class UploadPage extends React.Component {
                                             onChange={this.handleNotesChange}
                                         />
                                     </label>
+                                    <div className={pageStyles.fieldLabel}>
+                                        {'Tags'}
+                                        <TagInput
+                                            tags={this.state.tags}
+                                            onChange={this.handleTagsChange}
+                                        />
+                                    </div>
                                     {this.state.error && (
                                         <div className={pageStyles.error}>{this.state.error}</div>
                                     )}

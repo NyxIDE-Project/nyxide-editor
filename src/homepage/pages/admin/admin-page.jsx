@@ -7,11 +7,12 @@ import AdminUsersTab from './admin-users-tab.jsx';
 import AdminReportsTab from './admin-reports-tab.jsx';
 import AdminFeaturedTab from './admin-featured-tab.jsx';
 import AdminBroadcastTab from './admin-broadcast-tab.jsx';
+import AdminEventsTab from './admin-events-tab.jsx';
 
 import pageStyles from '../page.css';
 import styles from './admin-page.css';
 
-const TABS = ['reports', 'users', 'featured', 'broadcast'];
+const TABS = ['reports', 'users', 'featured', 'events', 'broadcast'];
 
 // nyxide: access here is checked automatically (logged in + admin/owner role + a recent-
 // enough login per req.session.adminAuthenticatedAt on the server) - there's nothing to
@@ -61,6 +62,7 @@ class AdminGate extends React.Component {
                 {this.state.activeTab === 'reports' && <AdminReportsTab />}
                 {this.state.activeTab === 'users' && <AdminUsersTab />}
                 {this.state.activeTab === 'featured' && <AdminFeaturedTab />}
+                {this.state.activeTab === 'events' && <AdminEventsTab />}
                 {this.state.activeTab === 'broadcast' && <AdminBroadcastTab />}
             </div>
         );

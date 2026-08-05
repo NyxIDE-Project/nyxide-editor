@@ -9,6 +9,7 @@ const SET_WINDOW_FULLSCREEN = 'tw/SET_WINDOW_FULLSCREEN';
 const SET_DIMENSIONS = 'tw/SET_DIMENSIONS';
 const SET_AUTHOR = 'tw/SET_AUTHOR';
 const SET_DESCRIPTION = 'tw/SET_DESCRIPTION';
+const SET_TAGS = 'tw/SET_TAGS';
 const SET_STATS = 'tw/SET_STATS';
 const ADD_COMPILE_ERROR = 'tw/ADD_COMPILE_ERROR';
 const CLEAR_COMPILE_ERRORS = 'tw/CLEAR_COMPILE_ERRORS';
@@ -44,6 +45,7 @@ export const initialState = {
         instructions: '',
         credits: ''
     },
+    tags: [],
     stats: {
         viewCount: 0,
         likeCount: 0,
@@ -109,6 +111,10 @@ const reducer = function (state, action) {
     case SET_DESCRIPTION:
         return Object.assign({}, state, {
             description: action.description
+        });
+    case SET_TAGS:
+        return Object.assign({}, state, {
+            tags: action.tags
         });
     case SET_STATS:
         return Object.assign({}, state, {
@@ -234,6 +240,13 @@ const setDescription = function (description) {
     };
 };
 
+const setTags = function (tags) {
+    return {
+        type: SET_TAGS,
+        tags: tags
+    };
+};
+
 const setStats = function (stats) {
     return {
         type: SET_STATS,
@@ -311,6 +324,7 @@ export {
     setDimensions,
     setAuthor,
     setDescription,
+    setTags,
     setStats,
     addCompileError,
     clearCompileErrors,

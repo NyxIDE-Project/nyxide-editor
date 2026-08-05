@@ -19,6 +19,8 @@ const serializeUser = user => ({
 // profile views - so a ban notice/reason isn't broadcast to other visitors.
 const serializeMe = user => ({
     ...serializeUser(user),
+    email: user.email || null,
+    usernameChangedAt: user.username_changed_at || null,
     isBanned: usersModel.isBanned(user),
     bannedUntil: user.banned_until || null,
     banReason: user.ban_reason || null
@@ -55,6 +57,7 @@ const serializeProject = (project, owner, viewerId) => ({
     notesAndCredits: project.notes_and_credits,
     fileSize: project.file_size,
     viewCount: project.view_count,
+    tags: projectsModel.getTags(project.id),
     ...projectsModel.getEngagement(project.id, viewerId)
 });
 
@@ -77,6 +80,14 @@ const serializeNotification = notification => ({
     createdAt: notification.created_at
 });
 
+const serializeEvent = (event, author) => ({
+    id: event.id,
+    title: event.title,
+    content: event.content,
+    author: author ? {id: author.id, username: author.username} : null,
+    createdAt: event.created_at
+});
+
 module.exports = {
     serializeUser,
     serializeMe,
@@ -84,5 +95,6 @@ module.exports = {
     serializeProjectSummary,
     serializeProject,
     serializeReport,
-    serializeNotification
+    serializeNotification,
+    serializeEvent
 };

@@ -5,6 +5,7 @@ import {AuthContext} from '../../contexts/auth-context.jsx';
 import {get, putJson, putForm} from '../../lib/api';
 import {MAX_UPLOAD_BYTES} from '../../../lib/nyxide-constants';
 import {formatBytes} from '../../../lib/tw-bytes-utils';
+import TagInput from '../../components/tag-input/tag-input.jsx';
 
 import pageStyles from '../page.css';
 import uploadStyles from '../upload/upload-page.css';
@@ -19,6 +20,7 @@ class EditProjectForm extends React.Component {
             title: '',
             description: '',
             notesAndCredits: '',
+            tags: [],
             currentFileSize: 0,
             newFile: null,
             thumbnailPreviewUrl: null,
@@ -34,6 +36,7 @@ class EditProjectForm extends React.Component {
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleNotesChange = this.handleNotesChange.bind(this);
+        this.handleTagsChange = this.handleTagsChange.bind(this);
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
         this.handleThumbnailInputChange = this.handleThumbnailInputChange.bind(this);
         this.handleFileDrop = this.handleFileDrop.bind(this);
@@ -55,6 +58,7 @@ class EditProjectForm extends React.Component {
                     title: project.title,
                     description: project.description,
                     notesAndCredits: project.notesAndCredits,
+                    tags: project.tags || [],
                     currentFileSize: project.fileSize,
                     thumbnailPreviewUrl: project.thumbnailUrl
                 });
@@ -96,6 +100,9 @@ class EditProjectForm extends React.Component {
     handleNotesChange (e) {
         this.setState({notesAndCredits: e.target.value});
     }
+    handleTagsChange (tags) {
+        this.setState({tags});
+    }
     handleFileInputChange (e) {
         this.setNewFile(e.target.files[0]);
     }
@@ -120,7 +127,8 @@ class EditProjectForm extends React.Component {
             await putJson(`/api/projects/${id}`, {
                 title: this.state.title,
                 description: this.state.description,
-                notesAndCredits: this.state.notesAndCredits
+                notesAndCredits: this.state.notesAndCredits,
+                tags: this.state.tags
             });
             if (this.state.newFile) {
                 const formData = new FormData();
@@ -269,6 +277,13 @@ class EditProjectForm extends React.Component {
                                 onChange={this.handleNotesChange}
                             />
                         </label>
+                        <div className={pageStyles.fieldLabel}>
+                            {'Tags'}
+                            <TagInput
+                                tags={this.state.tags}
+                                onChange={this.handleTagsChange}
+                            />
+                        </div>
                         {this.state.error && (
                             <div className={pageStyles.error}>{this.state.error}</div>
                         )}

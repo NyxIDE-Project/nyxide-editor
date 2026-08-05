@@ -1,0 +1,86 @@
+@import "../../css/colors.css";
+
+.container {
+    line-height: 1.5em;
+    padding: 0.5rem 0.75rem;
+    margin: 5px 0 8px 0;
+    border-radius: 0.5rem;
+    border: 1px solid $error-primary;
+    background-color: $error-light;
+    color: $text-primary;
+}
+
+.container p {
+    margin: 4px 0;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.list {
+    list-style: none;
+    margin: 0.5rem 0 0 0;
+    padding: 0;
+}
+
+.item {
+    border: 1px solid $error-primary;
+    border-radius: 0.4rem;
+    margin-bottom: 0.4rem;
+    background-color: $ui-white;
+    overflow: hidden;
+}
+
+.item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.item-header:hover {
+    background-color: $error-transparent;
+}
+
+.caret {
+    flex-shrink: 0;
+    width: 1em;
+    text-align: center;
+}
+
+.extension-id {
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.extension-url {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.75;
+    font-size: 0.85em;
+}
+
+.source-box {
+    border-top: 1px solid $error-primary;
+    padding: 0.5rem 0.6rem;
+}
+
+.source-code {
+    max-height: 20rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: monospace;
+    font-size: 0.8em;
+    margin: 0;
+}
+
+.source-error {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}

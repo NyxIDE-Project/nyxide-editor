@@ -17,6 +17,16 @@ import {MenuItem, MenuSection} from '../../../components/menu/menu.jsx';
 import menuBarStyles from '../../../components/menu-bar/menu-bar.css';
 import styles from './topbar.css';
 
+import homeIcon from './icons/icon-home.svg';
+import exploreIcon from './icons/icon-explore.svg';
+import createIcon from './icons/icon-create.svg';
+import myProjectsIcon from './icons/icon-my-projects.svg';
+import loginIcon from './icons/icon-login.svg';
+import signupIcon from './icons/icon-signup.svg';
+
+// eslint-disable-next-line max-len
+const SEARCH_ICON_PATH = 'M10 3a7 7 0 1 0 4.2 12.6l5.1 5.1 1.4-1.4-5.1-5.1A7 7 0 0 0 10 3Zm-5 7a5 5 0 1 1 10 0 5 5 0 0 1-10 0Z';
+
 const Topbar = () => {
     const {user, loading, logout} = useContext(AuthContext);
     const history = useHistory();
@@ -62,12 +72,24 @@ const Topbar = () => {
                             className={navItemClass('/')}
                             to="/"
                         >
+                            <img
+                                className={styles.navIcon}
+                                src={homeIcon}
+                                alt=""
+                                draggable={false}
+                            />
                             Home
                         </Link>
                         <Link
                             className={navItemClass('/explore')}
                             to="/explore"
                         >
+                            <img
+                                className={styles.navIcon}
+                                src={exploreIcon}
+                                alt=""
+                                draggable={false}
+                            />
                             Explore
                         </Link>
                     </div>
@@ -75,6 +97,20 @@ const Topbar = () => {
                         className={styles.searchForm}
                         onSubmit={handleSearchSubmit}
                     >
+                        <svg
+                            className={styles.searchIcon}
+                            viewBox="0 0 24 24"
+                            width="16"
+                            height="16"
+                            aria-hidden="true"
+                        >
+                            <path
+                                fill="currentColor"
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d={SEARCH_ICON_PATH}
+                            />
+                        </svg>
                         <input
                             className={styles.searchInput}
                             type="text"
@@ -89,6 +125,12 @@ const Topbar = () => {
                         className={classNames(menuBarStyles.menuBarItem, menuBarStyles.hoverable)}
                         href="/editor"
                     >
+                        <img
+                            className={styles.navIcon}
+                            src={createIcon}
+                            alt=""
+                            draggable={false}
+                        />
                         Create
                     </a>
                     {!loading && user && (
@@ -96,6 +138,12 @@ const Topbar = () => {
                             className={classNames(menuBarStyles.menuBarItem, menuBarStyles.hoverable)}
                             to="/my-projects"
                         >
+                            <img
+                                className={styles.navIcon}
+                                src={myProjectsIcon}
+                                alt=""
+                                draggable={false}
+                            />
                             My Projects
                         </Link>
                     )}
@@ -146,12 +194,24 @@ const Topbar = () => {
                                 className={classNames(menuBarStyles.menuBarItem, menuBarStyles.hoverable)}
                                 to="/login"
                             >
+                                <img
+                                    className={styles.navIcon}
+                                    src={loginIcon}
+                                    alt=""
+                                    draggable={false}
+                                />
                                 Log In
                             </Link>
                             <Link
                                 className={classNames(menuBarStyles.menuBarItem, menuBarStyles.hoverable)}
                                 to="/register"
                             >
+                                <img
+                                    className={styles.navIcon}
+                                    src={signupIcon}
+                                    alt=""
+                                    draggable={false}
+                                />
                                 Sign Up
                             </Link>
                         </React.Fragment>

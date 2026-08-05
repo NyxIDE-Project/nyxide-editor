@@ -94,6 +94,7 @@ class NyxSaveButton extends React.Component {
         this.autoThumbnailBlob = null;
         this.state = {
             isLoggedIn: null,
+            currentUsername: null,
             isSaving: false,
             isModalOpen: false,
             isPreparing: false,
@@ -109,7 +110,10 @@ class NyxSaveButton extends React.Component {
     componentDidMount () {
         fetch('/api/auth/me', {credentials: 'include'})
             .then(res => res.json())
-            .then(data => this.setState({isLoggedIn: Boolean(data.user)}))
+            .then(data => this.setState({
+                isLoggedIn: Boolean(data.user),
+                currentUsername: data.user ? data.user.username : null
+            }))
             .catch(() => this.setState({isLoggedIn: false}));
     }
     captureThumbnail () {
@@ -251,7 +255,16 @@ class NyxSaveButton extends React.Component {
         }
     }
     render () {
-        const {intl, projectId} = this.props;
+        const {intl, projectId, authorUsername} = this.props;
+        // Only ever a "new project" (projectId === '0') or a project you actually own should
+        // show this button - viewing someone else's project has nothing to "update" here.
+        const isExistingProject = projectId !== '0';
+        const isOwnProject = !isExistingProject || (
+            Boolean(this.state.currentUsername) && this.state.currentUsername === authorUsername
+        );
+        if (!isOwnProject) {
+            return null;
+        }
         const label = this.state.isSaving ?
             messages.saving :
             (projectId === '0' ? messages.save : messages.update);
@@ -377,12 +390,14 @@ NyxSaveButton.propTypes = {
     onSetProjectId: PropTypes.func.isRequired,
     projectId: PropTypes.string,
     projectTitle: PropTypes.string,
+    authorUsername: PropTypes.string,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 
 const mapStateToProps = state => ({
     projectId: state.scratchGui.projectState.projectId,
     projectTitle: state.scratchGui.projectTitle,
+    authorUsername: state.scratchGui.tw.author.username,
     vm: state.scratchGui.vm
 });
 

@@ -5,6 +5,7 @@ import {Redirect} from 'react-router-dom';
 import {AuthContext} from '../../contexts/auth-context.jsx';
 import {putJson, postForm} from '../../lib/api';
 import {MAX_BANNER_BYTES} from '../../../lib/nyxide-constants';
+import UsernameForm from './username-form.jsx';
 
 import styles from '../page.css';
 
@@ -13,6 +14,7 @@ class SettingsForm extends React.Component {
         super(props);
         this.state = {
             displayName: props.user.displayName || '',
+            email: props.user.email || '',
             bio: props.user.bio || '',
             avatarFile: null,
             bannerFile: null,
@@ -22,6 +24,7 @@ class SettingsForm extends React.Component {
             isSaving: false
         };
         this.handleDisplayNameChange = this.handleDisplayNameChange.bind(this);
+        this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handleBioChange = this.handleBioChange.bind(this);
         this.handleAvatarChange = this.handleAvatarChange.bind(this);
         this.handleBannerChange = this.handleBannerChange.bind(this);
@@ -29,6 +32,9 @@ class SettingsForm extends React.Component {
     }
     handleDisplayNameChange (e) {
         this.setState({displayName: e.target.value, saved: false});
+    }
+    handleEmailChange (e) {
+        this.setState({email: e.target.value, saved: false});
     }
     handleBioChange (e) {
         this.setState({bio: e.target.value, saved: false});
@@ -57,6 +63,9 @@ class SettingsForm extends React.Component {
                 displayName: this.state.displayName,
                 bio: this.state.bio
             });
+            if (this.state.email !== (this.props.user.email || '')) {
+                await this.props.updateEmail(this.state.email);
+            }
             if (this.state.avatarFile) {
                 const formData = new FormData();
                 formData.append('avatar', this.state.avatarFile);
@@ -76,6 +85,14 @@ class SettingsForm extends React.Component {
         return (
             <div>
                 <h1 className={styles.heading}>Account Settings</h1>
+
+                <h2 className={styles.heading}>Username</h2>
+                <UsernameForm
+                    user={this.props.user}
+                    updateUsername={this.props.updateUsername}
+                />
+
+                <h2 className={styles.heading}>Profile</h2>
                 <form
                     className={styles.form}
                     onSubmit={this.handleSubmit}
@@ -87,6 +104,15 @@ class SettingsForm extends React.Component {
                             type="text"
                             value={this.state.displayName}
                             onChange={this.handleDisplayNameChange}
+                        />
+                    </label>
+                    <label className={styles.fieldLabel}>
+                        Email
+                        <input
+                            className={styles.textInput}
+                            type="email"
+                            value={this.state.email}
+                            onChange={this.handleEmailChange}
                         />
                     </label>
                     <label className={styles.fieldLabel}>
@@ -141,22 +167,33 @@ class SettingsForm extends React.Component {
 
 SettingsForm.propTypes = {
     user: PropTypes.shape({
+        username: PropTypes.string.isRequired,
         bio: PropTypes.string,
         displayName: PropTypes.string,
-        bannerUrl: PropTypes.string
-    }).isRequired
+        email: PropTypes.string,
+        bannerUrl: PropTypes.string,
+        usernameChangedAt: PropTypes.number
+    }).isRequired,
+    updateEmail: PropTypes.func.isRequired,
+    updateUsername: PropTypes.func.isRequired
 };
 
 const SettingsPage = () => (
     <AuthContext.Consumer>
-        {({user, loading}) => {
+        {({user, loading, updateEmail, updateUsername}) => {
             if (loading) {
                 return <div className={styles.loading}>Loading…</div>;
             }
             if (!user) {
                 return <Redirect to="/login" />;
             }
-            return <SettingsForm user={user} />;
+            return (
+                <SettingsForm
+                    user={user}
+                    updateEmail={updateEmail}
+                    updateUsername={updateUsername}
+                />
+            );
         }}
     </AuthContext.Consumer>
 );

@@ -1,0 +1,125 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+.banner {
+    width: 100%;
+    background: $looks-secondary;
+}
+
+.inner {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.pitch {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    min-width: 18rem;
+    flex: 1;
+}
+
+.headline {
+    margin: 0;
+    color: $ui-white;
+    font-size: 1.7rem;
+    line-height: 1.3;
+}
+
+.subheadline {
+    margin: 0;
+    color: $ui-white;
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
+.pitch-link {
+    color: $ui-white;
+    text-decoration: underline;
+}
+
+.try-button {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: $ui-white;
+    color: $looks-secondary;
+    font-weight: bold;
+    padding: 0.6rem 1.3rem;
+    border-radius: $form-radius;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.video-card {
+    width: 20rem;
+    max-width: 100%;
+    border-radius: calc($form-radius * 2);
+    background: $ui-modal-background;
+    padding: 0.6rem;
+    box-shadow: 0 0.25rem 0.75rem $ui-black-transparent;
+}
+
+.video-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.3rem 0.6rem;
+}
+
+.video-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    object-fit: contain;
+    background: $ui-white;
+}
+
+.video-title {
+    color: $text-primary;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.video-channel {
+    color: $text-primary;
+    opacity: 0.7;
+    font-size: 0.75rem;
+}
+
+.video-placeholder {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    aspect-ratio: 16 / 9;
+    border-radius: $form-radius;
+    background: linear-gradient(135deg, $looks-secondary, $ui-black-transparent);
+}
+
+.play-circle {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: $ui-black-transparent;
+    color: $ui-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-label {
+    color: $ui-white;
+    opacity: 0.85;
+    font-size: 0.8rem;
+    font-weight: bold;
+}

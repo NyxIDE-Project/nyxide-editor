@@ -74,6 +74,13 @@ const statements = {
         JOIN homepage_featured hf ON hf.project_id = p.id
         ORDER BY hf.featured_at DESC
         LIMIT ?
+    `),
+    getTags: db.prepare('SELECT tag FROM project_tags WHERE project_id = ? ORDER BY tag ASC'),
+    clearTags: db.prepare('DELETE FROM project_tags WHERE project_id = ?'),
+    addTag: db.prepare('INSERT OR IGNORE INTO project_tags (project_id, tag) VALUES (?, ?)'),
+    popularTags: db.prepare(`
+        SELECT tag, COUNT(*) AS count FROM project_tags
+        GROUP BY tag ORDER BY count DESC, tag ASC LIMIT ?
     `)
 };
 
@@ -123,6 +130,61 @@ const search = (query, page, pageSize) => {
         total: statements.searchCount.get(pattern, pattern).count
     };
 };
+
+// Powers both plain search and the #tag / :isfeatured search operators (see
+// server/src/routes/projects.js GET /) - built dynamically since the set of joins/filters
+// varies per request, unlike the fixed statements above.
+const queryProjects = ({queryText, tags, isFeatured, page, pageSize}) => {
+    if (isFeatured) {
+        pruneExpiredHomepageFeatured();
+    }
+    const offset = (page - 1) * pageSize;
+    const joins = [];
+    const conditions = [];
+    const params = [];
+
+    tags.forEach((tag, i) => {
+        joins.push(`JOIN project_tags pt${i} ON pt${i}.project_id = p.id AND pt${i}.tag = ?`);
+        params.push(tag);
+    });
+    if (isFeatured) {
+        joins.push('JOIN homepage_featured hf ON hf.project_id = p.id');
+    }
+    if (queryText) {
+        const pattern = `%${escapeLike(queryText)}%`;
+        conditions.push("(p.title LIKE ? ESCAPE '\\' OR p.description LIKE ? ESCAPE '\\')");
+        params.push(pattern, pattern);
+    }
+
+    const joinSql = joins.length ? ` ${joins.join(' ')}` : '';
+    const whereSql = conditions.length ? ` WHERE ${conditions.join(' AND ')}` : '';
+
+    const items = db.prepare(`
+        SELECT p.* FROM projects p${joinSql}${whereSql}
+        ORDER BY p.created_at DESC LIMIT ? OFFSET ?
+    `).all(...params, pageSize, offset);
+    const total = db.prepare(`
+        SELECT COUNT(*) AS count FROM projects p${joinSql}${whereSql}
+    `).get(...params).count;
+
+    return {items, total};
+};
+
+const getTags = projectId => statements.getTags.all(projectId).map(row => row.tag);
+
+const setTags = (projectId, tags) => {
+    db.exec('BEGIN');
+    try {
+        statements.clearTags.run(projectId);
+        tags.forEach(tag => statements.addTag.run(projectId, tag));
+        db.exec('COMMIT');
+    } catch (err) {
+        db.exec('ROLLBACK');
+        throw err;
+    }
+};
+
+const popularTags = (limit = 3) => statements.popularTags.all(limit);
 
 const listFeatured = userId => statements.listFeatured.all(userId);
 
@@ -210,5 +272,9 @@ module.exports = {
     autoFeatureIfEligible,
     manualFeature,
     manualUnfeature,
-    listHomepageFeatured
+    listHomepageFeatured,
+    queryProjects,
+    getTags,
+    setTags,
+    popularTags
 };

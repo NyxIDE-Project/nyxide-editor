@@ -1,0 +1,23 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: $extensions-transparent;
+    color: $extensions-primary;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.tag:hover {
+    text-decoration: underline;
+}

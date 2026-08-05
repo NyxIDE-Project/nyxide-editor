@@ -3,7 +3,9 @@ const express = require('express');
 const session = require('express-session');
 const SqliteSessionStore = require('./lib/sqlite-session-store');
 const db = require('./db');
-const {PORT, SESSION_SECRET, IS_PRODUCTION, ADMIN_USERNAMES, OWNER_USERNAME} = require('./config');
+const {
+    PORT, SESSION_SECRET, IS_PRODUCTION, ADMIN_USERNAMES, OWNER_USERNAME, TURNSTILE_SITE_KEY
+} = require('./config');
 const {attachUser} = require('./middleware/auth');
 const errorHandler = require('./middleware/error-handler');
 const usersModel = require('./models/users');
@@ -13,6 +15,8 @@ const projectsRoutes = require('./routes/projects');
 const reportsRoutes = require('./routes/reports');
 const notificationsRoutes = require('./routes/notifications');
 const adminRoutes = require('./routes/admin');
+const eventsRoutes = require('./routes/events');
+const githubRoutes = require('./routes/github');
 
 const app = express();
 const sessionStore = new SqliteSessionStore(db);
@@ -53,12 +57,18 @@ app.use(session({
 }));
 app.use(attachUser);
 
+app.get('/api/config', (req, res) => {
+    res.json({turnstileSiteKey: TURNSTILE_SITE_KEY});
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/events', eventsRoutes);
+app.use('/api/github', githubRoutes);
 
 if (IS_PRODUCTION) {
     const buildDir = path.resolve(__dirname, '..', '..', 'build');

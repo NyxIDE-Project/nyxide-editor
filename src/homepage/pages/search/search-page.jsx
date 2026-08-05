@@ -11,6 +11,23 @@ const useQueryParam = name => {
     return new URLSearchParams(location.search).get(name) || '';
 };
 
+// Gives the operator-only searches used by the homepage's "Show All" links (see
+// home-page.jsx / popular-tags.jsx) a readable heading instead of literally quoting the
+// operator back at the user.
+const headingFor = query => {
+    const trimmed = query.trim();
+    if (trimmed.toLowerCase() === ':isfeatured') {
+        return 'Featured Projects';
+    }
+    if (trimmed.toLowerCase() === ':newest') {
+        return 'Newest Projects';
+    }
+    if (/^#[a-z0-9_-]+$/i.test(trimmed)) {
+        return trimmed;
+    }
+    return `Search results for "${query}"`;
+};
+
 const SearchPage = () => {
     const query = useQueryParam('q');
     const [items, setItems] = useState([]);
@@ -33,7 +50,7 @@ const SearchPage = () => {
 
     return (
         <div>
-            <h1 className={styles.heading}>{`Search results for "${query}"`}</h1>
+            <h1 className={styles.heading}>{headingFor(query)}</h1>
             {loading ? (
                 <div className={styles.loading}>Loading…</div>
             ) : (

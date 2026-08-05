@@ -3,9 +3,12 @@ const usersModel = require('../models/users');
 const projectsModel = require('../models/projects');
 const reportsModel = require('../models/reports');
 const notificationsModel = require('../models/notifications');
+const eventsModel = require('../models/events');
 const {requireAdmin, loadProject} = require('../middleware/auth');
 const {removeFile} = require('../middleware/upload');
-const {serializeMe, serializeProject, serializeProjectSummary, serializeReport} = require('../lib/serialize');
+const {
+    serializeMe, serializeProject, serializeProjectSummary, serializeReport, serializeEvent
+} = require('../lib/serialize');
 
 const router = express.Router();
 
@@ -165,6 +168,40 @@ router.post('/homepage-featured/:id', loadProject, (req, res) => {
 
 router.delete('/homepage-featured/:id', loadProject, (req, res) => {
     projectsModel.manualUnfeature(req.project.id);
+    res.status(204).end();
+});
+
+// --- Events ---
+// Simple markdown-content announcements shown in the "Current Events" box on the logged-in
+// homepage. No draft/publish state - creating one publishes it immediately, deleting removes
+// it immediately.
+
+router.get('/events', (req, res) => {
+    const items = eventsModel.listRecent(50);
+    res.json({
+        items: items.map(event => serializeEvent(event, event.created_by ? usersModel.getById(event.created_by) : null))
+    });
+});
+
+router.post('/events', (req, res) => {
+    const title = typeof req.body.title === 'string' ? req.body.title.trim().slice(0, 200) : '';
+    const content = typeof req.body.content === 'string' ? req.body.content.slice(0, 20000) : '';
+    if (!title) {
+        return res.status(400).json({error: 'A title is required'});
+    }
+    if (!content.trim()) {
+        return res.status(400).json({error: 'Content is required'});
+    }
+    const event = eventsModel.create({title, content, createdBy: req.user.id});
+    res.status(201).json(serializeEvent(event, req.user));
+});
+
+router.delete('/events/:id', (req, res) => {
+    const event = eventsModel.getById(req.params.id);
+    if (!event) {
+        return res.status(404).json({error: 'Event not found'});
+    }
+    eventsModel.remove(event.id);
     res.status(204).end();
 });
 

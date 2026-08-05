@@ -2,6 +2,7 @@ import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 
 import Topbar from './components/topbar/topbar.jsx';
+import HeroBanner from './components/hero-banner/hero-banner.jsx';
 import HomePage from './pages/home/home-page.jsx';
 import ExplorePage from './pages/explore/explore-page.jsx';
 import SearchPage from './pages/search/search-page.jsx';
@@ -19,6 +20,7 @@ import styles from './app.css';
 const App = () => (
     <React.Fragment>
         <Topbar />
+        <HeroBanner />
         <main className={styles.main}>
             <Switch>
                 <Route

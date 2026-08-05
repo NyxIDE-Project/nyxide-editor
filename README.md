@@ -1,4 +1,4 @@
-scratch-gui modified for use in [TurboWarp](https://turbowarp.org/)
+[TurboWarp](https://turbowarp.org/)'s scratch-gui modified for use in NyxIDE
 
 ## Setup
 
@@ -11,6 +11,9 @@ scratch-gui modified for use in [TurboWarp](https://turbowarp.org/)
 ```npm run server:install```
 2. Run Frontend
 ```npm run server:dev```
+
+## Disclaimer
+This project was originaly created and maintained by the [TurboWarp](https://turbowarp.org/) and Scratch MIT Groups respectivly, I have nothing to do with them. Why didnt you fork this from the Turbowarwp repo? I forgot, if any turbowarp devs have a problem with this not being properly forked create and issue and ill fix it.
 
 ## License
 

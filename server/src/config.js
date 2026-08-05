@@ -1,5 +1,9 @@
 const path = require('path');
 
+// Loads server/.env (gitignored) into process.env, if present, so secrets like the Turnstile
+// keys don't have to be exported by hand every time the server starts.
+require('dotenv').config({path: path.resolve(__dirname, '..', '.env')});
+
 const DATA_DIR = path.resolve(__dirname, '..', 'data');
 
 module.exports = {
@@ -28,5 +32,19 @@ module.exports = {
     // an auto-featured (not manually admin-featured) project stays before it's dropped.
     HOMEPAGE_FEATURE_THRESHOLD: Number(process.env.HOMEPAGE_FEATURE_THRESHOLD) || 100,
     HOMEPAGE_FEATURE_DURATION_MS: Number(process.env.HOMEPAGE_FEATURE_DURATION_MS) || (5 * 24 * 60 * 60 * 1000),
-    IS_PRODUCTION: process.env.NODE_ENV === 'production'
+    IS_PRODUCTION: process.env.NODE_ENV === 'production',
+    // Cloudflare Turnstile: TURNSTILE_SITE_KEY is public (sent to the client via GET
+    // /api/config), TURNSTILE_SECRET_KEY is private and only ever used server-side to verify
+    // a token against Cloudflare's siteverify endpoint. Cloudflare's published test keypair
+    // is the default so registration/login work out of the box in dev without any setup.
+    TURNSTILE_SITE_KEY: process.env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA',
+    TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA',
+    // Minimum time between username changes.
+    USERNAME_CHANGE_COOLDOWN_MS: Number(process.env.USERNAME_CHANGE_COOLDOWN_MS) || (12 * 24 * 60 * 60 * 1000),
+    // Repo shown in the homepage's "recent commits" box. A GitHub personal access token isn't
+    // required for a public repo, but can be set to raise the (otherwise 60/hr, shared across
+    // all visitors since this is fetched server-side) unauthenticated rate limit.
+    GITHUB_REPO: process.env.GITHUB_REPO || 'arc360alt/nyxide-editor',
+    GITHUB_TOKEN: process.env.GITHUB_TOKEN || null,
+    GITHUB_COMMITS_CACHE_MS: Number(process.env.GITHUB_COMMITS_CACHE_MS) || (5 * 60 * 1000)
 };

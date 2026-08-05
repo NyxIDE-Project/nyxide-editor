@@ -11,6 +11,7 @@ db.exec(`
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
+        email TEXT COLLATE NOCASE,
         password_hash TEXT NOT NULL,
         display_name TEXT NOT NULL DEFAULT '',
         bio TEXT NOT NULL DEFAULT '',
@@ -19,6 +20,7 @@ db.exec(`
         role TEXT NOT NULL DEFAULT 'user',
         banned_until INTEGER,
         ban_reason TEXT,
+        username_changed_at INTEGER,
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -96,10 +98,25 @@ db.exec(`
         featured_at INTEGER NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS project_tags (
+        project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+        tag TEXT NOT NULL,
+        PRIMARY KEY (project_id, tag)
+    );
+
+    CREATE TABLE IF NOT EXISTS events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL DEFAULT '',
+        created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
     CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id);
     CREATE INDEX IF NOT EXISTS idx_follows_followee ON follows(followee_id);
     CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
     CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, read_at);
+    CREATE INDEX IF NOT EXISTS idx_project_tags_tag ON project_tags(tag);
 `);
 
 // Migrations for databases created before a column existed (CREATE TABLE IF NOT EXISTS
@@ -116,5 +133,12 @@ addColumnIfMissing('users', 'role', "TEXT NOT NULL DEFAULT 'user'");
 addColumnIfMissing('users', 'banned_until', 'INTEGER');
 addColumnIfMissing('users', 'ban_reason', 'TEXT');
 addColumnIfMissing('users', 'banner_path', 'TEXT');
+addColumnIfMissing('users', 'email', 'TEXT COLLATE NOCASE');
+addColumnIfMissing('users', 'username_changed_at', 'INTEGER');
+
+// Created here (not in the main CREATE TABLE block above) because on an existing database
+// the users.email column above is only added by the migration line just before this, and
+// this index would fail with "no such column" if it ran any earlier than that.
+db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email)');
 
 module.exports = db;

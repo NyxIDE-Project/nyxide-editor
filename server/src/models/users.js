@@ -2,11 +2,17 @@ const db = require('../db');
 
 const statements = {
     insert: db.prepare(`
-        INSERT INTO users (username, password_hash, display_name)
-        VALUES (?, ?, ?)
+        INSERT INTO users (username, email, password_hash, display_name)
+        VALUES (?, ?, ?, ?)
     `),
     getById: db.prepare('SELECT * FROM users WHERE id = ?'),
     getByUsername: db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE'),
+    getByEmail: db.prepare('SELECT * FROM users WHERE email = ? COLLATE NOCASE'),
+    getByUsernameOrEmail: db.prepare(
+        'SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE'
+    ),
+    updateEmail: db.prepare('UPDATE users SET email = ? WHERE id = ?'),
+    updateUsername: db.prepare('UPDATE users SET username = ?, username_changed_at = ? WHERE id = ?'),
     updateProfile: db.prepare(`
         UPDATE users SET display_name = ?, bio = ? WHERE id = ?
     `),
@@ -50,13 +56,25 @@ const statements = {
     listAllIds: db.prepare('SELECT id FROM users')
 };
 
-const create = ({username, passwordHash, displayName}) => {
-    const info = statements.insert.run(username, passwordHash, displayName);
+const create = ({username, email, passwordHash, displayName}) => {
+    const info = statements.insert.run(username, email, passwordHash, displayName);
     return statements.getById.get(info.lastInsertRowid);
 };
 
 const getById = id => statements.getById.get(id);
 const getByUsername = username => statements.getByUsername.get(username);
+const getByEmail = email => statements.getByEmail.get(email);
+const getByUsernameOrEmail = identifier => statements.getByUsernameOrEmail.get(identifier, identifier);
+
+const updateEmail = (id, email) => {
+    statements.updateEmail.run(email, id);
+    return statements.getById.get(id);
+};
+
+const updateUsername = (id, username) => {
+    statements.updateUsername.run(username, Date.now(), id);
+    return statements.getById.get(id);
+};
 
 const updateProfile = (id, {displayName, bio}) => {
     statements.updateProfile.run(displayName, bio, id);
@@ -132,6 +150,10 @@ module.exports = {
     create,
     getById,
     getByUsername,
+    getByEmail,
+    getByUsernameOrEmail,
+    updateEmail,
+    updateUsername,
     updateProfile,
     updateAvatar,
     updateBanner,

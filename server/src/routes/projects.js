@@ -11,11 +11,74 @@ const router = express.Router();
 const PAGE_SIZE = 24;
 const pageOf = req => Math.max(1, parseInt(req.query.page, 10) || 1);
 
+const TAG_RE = /^[a-z0-9_-]{1,30}$/;
+const MAX_TAGS = 10;
+
+// Search-bar operators: "#tag" filters by tag, ":isfeatured" filters to homepage-featured
+// projects, ":newest" is an explicit request for newest-first (which is already every
+// listing's default order, so it's a recognized no-op - it just needs to not fall through to
+// free text). Anything else is treated as free text and ANDed with the operators.
+const TAG_TOKEN_RE = /^#([a-z0-9_-]{1,30})$/i;
+const parseSearchTokens = q => {
+    const tags = [];
+    let isFeatured = false;
+    let isNewest = false;
+    const textParts = [];
+    q.split(/\s+/).filter(Boolean).forEach(token => {
+        const tagMatch = token.match(TAG_TOKEN_RE);
+        const lower = token.toLowerCase();
+        if (tagMatch) {
+            tags.push(tagMatch[1].toLowerCase());
+        } else if (lower === ':isfeatured') {
+            isFeatured = true;
+        } else if (lower === ':newest') {
+            isNewest = true;
+        } else {
+            textParts.push(token);
+        }
+    });
+    return {tags, isFeatured, isNewest, queryText: textParts.join(' ')};
+};
+
+// Accepts either a real array (JSON request bodies, e.g. PUT /:id) or a JSON-stringified
+// array (multipart form fields, e.g. POST / upload, which are always plain strings), and
+// returns a cleaned, deduplicated, capped list. Invalid entries are silently dropped rather
+// than erroring the whole request - the client already validates this, this is just defense
+// in depth.
+const parseTagsField = raw => {
+    let list = raw;
+    if (typeof raw === 'string') {
+        try {
+            list = JSON.parse(raw);
+        } catch (e) {
+            return [];
+        }
+    }
+    if (!Array.isArray(list)) {
+        return [];
+    }
+    const cleaned = [];
+    list.forEach(entry => {
+        if (typeof entry !== 'string') return;
+        const tag = entry.trim().toLowerCase().replace(/^#/, '');
+        if (TAG_RE.test(tag) && !cleaned.includes(tag)) {
+            cleaned.push(tag);
+        }
+    });
+    return cleaned.slice(0, MAX_TAGS);
+};
+
 router.get('/', (req, res) => {
     const page = pageOf(req);
-    const query = typeof req.query.q === 'string' ? req.query.q.trim() : '';
-    const {items, total} = query ?
-        projectsModel.search(query, page, PAGE_SIZE) :
+    const rawQuery = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+    const {tags, isFeatured: isFeaturedToken, isNewest, queryText} = parseSearchTokens(rawQuery);
+    if (typeof req.query.tag === 'string' && req.query.tag.trim()) {
+        tags.push(req.query.tag.trim().toLowerCase());
+    }
+    const isFeatured = isFeaturedToken || req.query.featured === 'true';
+    const hasFilters = tags.length > 0 || isFeatured || isNewest || queryText;
+    const {items, total} = hasFilters ?
+        projectsModel.queryProjects({queryText, tags, isFeatured, page, pageSize: PAGE_SIZE}) :
         projectsModel.listAll(page, PAGE_SIZE);
     res.json({
         items: items.map(project => serializeProjectSummary(project, usersModel.getById(project.owner_id))),
@@ -31,6 +94,12 @@ router.get('/featured', (req, res) => {
     res.json({
         items: items.map(project => serializeProjectSummary(project, usersModel.getById(project.owner_id)))
     });
+});
+
+// Must come before GET /:id, otherwise "tags" would be parsed as a project id.
+router.get('/tags/popular', (req, res) => {
+    const limit = Math.min(20, Math.max(1, parseInt(req.query.limit, 10) || 3));
+    res.json({items: projectsModel.popularTags(limit)});
 });
 
 router.get('/:id', loadProject, (req, res) => {
@@ -72,6 +141,7 @@ router.post('/', requireAuth, blockIfBanned, projectFields, (req, res) => {
         thumbnailPath: thumbnail ? thumbnail.path : null,
         fileSize: file.size
     });
+    projectsModel.setTags(project.id, parseTagsField(req.body.tags));
     res.status(201).json(serializeProject(project, req.user, req.user.id));
 });
 
@@ -82,6 +152,9 @@ router.put('/:id', requireAuth, blockIfBanned, loadProject, requireProjectOwners
         req.body.notesAndCredits.slice(0, 2000) : req.project.notes_and_credits;
 
     const updated = projectsModel.updateMeta(req.project.id, {title, description, notesAndCredits});
+    if (Object.prototype.hasOwnProperty.call(req.body, 'tags')) {
+        projectsModel.setTags(req.project.id, parseTagsField(req.body.tags));
+    }
     res.json(serializeProject(updated, req.user, req.user.id));
 });
 

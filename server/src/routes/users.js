@@ -4,12 +4,16 @@ const usersModel = require('../models/users');
 const projectsModel = require('../models/projects');
 const {requireAuth, blockIfBanned} = require('../middleware/auth');
 const {avatarField, bannerField, removeFile} = require('../middleware/upload');
-const {serializeProfile, serializeUser, serializeProjectSummary} = require('../lib/serialize');
+const {serializeProfile, serializeUser, serializeMe, serializeProjectSummary} = require('../lib/serialize');
+const {USERNAME_CHANGE_COOLDOWN_MS} = require('../config');
 
 const router = express.Router();
 
 const PAGE_SIZE = 24;
 const pageOf = req => Math.max(1, parseInt(req.query.page, 10) || 1);
+// Kept in sync with server/src/routes/auth.js's registration check.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
 
 const loadUserByUsername = (req, res, next) => {
     const user = usersModel.getByUsername(req.params.username);
@@ -32,6 +36,47 @@ router.put('/me', requireAuth, blockIfBanned, (req, res) => {
     const bio = typeof req.body.bio === 'string' ? req.body.bio.slice(0, 500) : req.user.bio;
     const updated = usersModel.updateProfile(req.user.id, {displayName, bio});
     res.json({user: serializeUser(updated)});
+});
+
+router.put('/me/email', requireAuth, blockIfBanned, (req, res) => {
+    const {email} = req.body;
+    if (typeof email !== 'string' || !EMAIL_RE.test(email)) {
+        return res.status(400).json({error: 'A valid email address is required'});
+    }
+    const existing = usersModel.getByEmail(email);
+    if (existing && existing.id !== req.user.id) {
+        return res.status(409).json({error: 'An account with this email already exists'});
+    }
+    const updated = usersModel.updateEmail(req.user.id, email);
+    res.json({user: serializeMe(updated)});
+});
+
+router.put('/me/username', requireAuth, blockIfBanned, (req, res) => {
+    const {username} = req.body;
+    if (typeof username !== 'string' || !USERNAME_RE.test(username)) {
+        return res.status(400).json({error: 'Username must be 3-20 letters, numbers, or underscores'});
+    }
+    const lastChanged = req.user.username_changed_at;
+    if (lastChanged) {
+        const nextAllowed = lastChanged + USERNAME_CHANGE_COOLDOWN_MS;
+        const remainingMs = nextAllowed - Date.now();
+        if (remainingMs > 0) {
+            const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+            return res.status(429).json({
+                error: `You can change your username again in ${remainingDays} day${remainingDays === 1 ? '' : 's'}`,
+                nextAllowedAt: nextAllowed
+            });
+        }
+    }
+    if (username.toLowerCase() === req.user.username.toLowerCase()) {
+        return res.status(400).json({error: 'That is already your username'});
+    }
+    const existing = usersModel.getByUsername(username);
+    if (existing) {
+        return res.status(409).json({error: 'Username is already taken'});
+    }
+    const updated = usersModel.updateUsername(req.user.id, username);
+    res.json({user: serializeMe(updated)});
 });
 
 router.post('/me/avatar', requireAuth, blockIfBanned, avatarField, (req, res) => {

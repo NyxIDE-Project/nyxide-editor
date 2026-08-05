@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import log from './log';
 
 import {setProjectTitle} from '../reducers/project-title';
-import {setAuthor, setDescription, setStats} from '../reducers/tw';
+import {setAuthor, setDescription, setTags, setStats} from '../reducers/tw';
 
 export const fetchProjectMeta = async projectId => {
     const res = await fetch(`/api/projects/${projectId}`);
@@ -39,6 +39,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
             if (this.props.reduxProjectId !== prevProps.reduxProjectId) {
                 this.props.onSetAuthor('', '');
                 this.props.onSetDescription('', '');
+                this.props.onSetTags([]);
                 this.props.onSetStats({
                     viewCount: 0,
                     likeCount: 0,
@@ -69,6 +70,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
                         if (instructions || credits) {
                             this.props.onSetDescription(instructions, credits);
                         }
+                        this.props.onSetTags(Array.isArray(data.tags) ? data.tags : []);
                         this.props.onSetStats({
                             viewCount: data.viewCount || 0,
                             likeCount: data.likeCount || 0,
@@ -91,6 +93,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
                 reduxProjectId,
                 onSetAuthor,
                 onSetDescription,
+                onSetTags,
                 onSetStats,
                 onSetProjectTitle,
                 /* eslint-enable no-unused-vars */
@@ -107,6 +110,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
         reduxProjectId: PropTypes.string,
         onSetAuthor: PropTypes.func,
         onSetDescription: PropTypes.func,
+        onSetTags: PropTypes.func,
         onSetStats: PropTypes.func,
         onSetProjectTitle: PropTypes.func
     };
@@ -122,6 +126,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
             instructions,
             credits
         })),
+        onSetTags: tags => dispatch(setTags(tags)),
         onSetStats: stats => dispatch(setStats(stats)),
         onSetProjectTitle: title => dispatch(setProjectTitle(title))
     });

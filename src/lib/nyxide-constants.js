@@ -1,7 +1,10 @@
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 const MAX_BANNER_BYTES = 2 * 1024 * 1024;
+// Kept in sync with server/src/config.js's USERNAME_CHANGE_COOLDOWN_MS default.
+const USERNAME_CHANGE_COOLDOWN_MS = 12 * 24 * 60 * 60 * 1000;
 
 export {
     MAX_UPLOAD_BYTES,
-    MAX_BANNER_BYTES
+    MAX_BANNER_BYTES,
+    USERNAME_CHANGE_COOLDOWN_MS
 };

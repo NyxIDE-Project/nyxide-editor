@@ -496,5 +496,6 @@ const ConnectedSecurityManagerComponent = connect(
 export {
     ConnectedSecurityManagerComponent as default,
     manuallyTrustExtension,
-    isTrustedExtension
+    isTrustedExtension,
+    TRUSTED_EXTENSION_ORIGINS
 };

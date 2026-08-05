@@ -1,4 +1,6 @@
 - Add more social features like hashtags (intigrate this into the homepage by showing popular hashtags)
 - Improve the UI and featureset
 - Add expandable blocks (like expandable if-else blocks and join and others)
-- Improve the security (add captcha and more security mesures like requiering email) and add google login support
+- Add google login support
+- Add "People who want to be featured" section where it shows projects that are just about to reach the threshold of being featured
+- Add an icon picker in the costume editor that pulls from FontAwesome

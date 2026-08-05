@@ -3,6 +3,7 @@ import React from 'react';
 import {Redirect} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
+import TurnstileWidget from '../../components/turnstile-widget/turnstile-widget.jsx';
 
 import styles from '../page.css';
 
@@ -10,28 +11,43 @@ class LoginForm extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            username: '',
+            identifier: '',
             password: '',
+            turnstileToken: null,
             error: null,
             isSubmitting: false
         };
-        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.turnstileRef = React.createRef();
+        this.handleIdentifierChange = this.handleIdentifierChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleTurnstileVerify = this.handleTurnstileVerify.bind(this);
+        this.handleTurnstileExpire = this.handleTurnstileExpire.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-    handleUsernameChange (e) {
-        this.setState({username: e.target.value});
+    handleIdentifierChange (e) {
+        this.setState({identifier: e.target.value});
     }
     handlePasswordChange (e) {
         this.setState({password: e.target.value});
     }
+    handleTurnstileVerify (token) {
+        this.setState({turnstileToken: token});
+    }
+    handleTurnstileExpire () {
+        this.setState({turnstileToken: null});
+    }
     async handleSubmit (e) {
         e.preventDefault();
+        if (!this.state.turnstileToken) {
+            this.setState({error: 'Please complete the verification challenge'});
+            return;
+        }
         this.setState({isSubmitting: true, error: null});
         try {
-            await this.props.login(this.state.username, this.state.password);
+            await this.props.login(this.state.identifier, this.state.password, this.state.turnstileToken);
         } catch (err) {
-            this.setState({isSubmitting: false, error: err.message});
+            if (this.turnstileRef.current) this.turnstileRef.current.reset();
+            this.setState({isSubmitting: false, error: err.message, turnstileToken: null});
         }
     }
     render () {
@@ -43,12 +59,12 @@ class LoginForm extends React.Component {
                     onSubmit={this.handleSubmit}
                 >
                     <label className={styles.fieldLabel}>
-                        Username
+                        Username or Email
                         <input
                             className={styles.textInput}
                             type="text"
-                            value={this.state.username}
-                            onChange={this.handleUsernameChange}
+                            value={this.state.identifier}
+                            onChange={this.handleIdentifierChange}
                         />
                     </label>
                     <label className={styles.fieldLabel}>
@@ -60,13 +76,18 @@ class LoginForm extends React.Component {
                             onChange={this.handlePasswordChange}
                         />
                     </label>
+                    <TurnstileWidget
+                        ref={this.turnstileRef}
+                        onVerify={this.handleTurnstileVerify}
+                        onExpire={this.handleTurnstileExpire}
+                    />
                     {this.state.error && (
                         <div className={styles.error}>{this.state.error}</div>
                     )}
                     <button
                         className={styles.submitButton}
                         type="submit"
-                        disabled={this.state.isSubmitting}
+                        disabled={this.state.isSubmitting || !this.state.turnstileToken}
                     >
                         {this.state.isSubmitting ? 'Logging In…' : 'Log In'}
                     </button>
