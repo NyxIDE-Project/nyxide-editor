@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import log from './log';
-import {API_BASE_URL} from './nyxide-constants';
+import {API_BASE_URL, resolveApiUrl} from './nyxide-constants';
 
 import {setProjectTitle} from '../reducers/project-title';
 import {setAuthor, setDescription, setTags, setStats} from '../reducers/tw';
@@ -64,7 +64,7 @@ const TWProjectMetaFetcherHOC = function (WrappedComponent) {
                             this.props.onSetProjectTitle(title);
                         }
                         const authorName = data.owner ? data.owner.username : '';
-                        const authorThumbnail = data.owner ? data.owner.avatarUrl : '';
+                        const authorThumbnail = data.owner ? resolveApiUrl(data.owner.avatarUrl) : '';
                         this.props.onSetAuthor(authorName, authorThumbnail);
                         const instructions = data.description || '';
                         const credits = data.notesAndCredits || '';

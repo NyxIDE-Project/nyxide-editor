@@ -27,6 +27,7 @@ module.exports = {
     BANNERS_DIR: path.join(DATA_DIR, 'banners'),
     MAX_PROJECT_FILE_BYTES: 25 * 1024 * 1024,
     MAX_IMAGE_BYTES: 5 * 1024 * 1024,
+    MAX_AVATAR_BYTES: 1 * 1024 * 1024,
     MAX_BANNER_BYTES: 2 * 1024 * 1024,
     // Homepage "Featured" auto-qualification: combined likes+favorites needed, and how long
     // an auto-featured (not manually admin-featured) project stays before it's dropped.

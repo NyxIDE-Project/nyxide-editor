@@ -3,6 +3,7 @@ import React from 'react';
 
 import ConfirmModal from '../../components/confirm-modal/confirm-modal.jsx';
 import {del} from '../../lib/api';
+import {resolveApiUrl} from '../../../lib/nyxide-constants';
 
 import styles from './my-projects-page.css';
 
@@ -40,7 +41,7 @@ class OwnedProjectCard extends React.Component {
                     {project.thumbnailUrl ? (
                         <img
                             className={styles.thumbnail}
-                            src={project.thumbnailUrl}
+                            src={resolveApiUrl(project.thumbnailUrl)}
                             alt={project.title}
                         />
                     ) : (

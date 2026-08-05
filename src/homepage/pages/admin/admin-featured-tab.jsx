@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {get, postJson, del} from '../../lib/api';
+import {resolveApiUrl} from '../../../lib/nyxide-constants';
 
 import styles from './admin-page.css';
 
@@ -91,7 +92,7 @@ class AdminFeaturedTab extends React.Component {
                                             {project.thumbnailUrl && (
                                                 <img
                                                     className={styles.reportTargetThumb}
-                                                    src={project.thumbnailUrl}
+                                                    src={resolveApiUrl(project.thumbnailUrl)}
                                                     alt=""
                                                 />
                                             )}

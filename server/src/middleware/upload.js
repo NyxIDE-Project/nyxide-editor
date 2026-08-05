@@ -9,6 +9,7 @@ const {
     BANNERS_DIR,
     MAX_PROJECT_FILE_BYTES,
     MAX_IMAGE_BYTES,
+    MAX_AVATAR_BYTES,
     MAX_BANNER_BYTES
 } = require('../config');
 
@@ -31,7 +32,7 @@ const imageUpload = multer({
 
 const avatarUpload = multer({
     storage: storageFor(AVATARS_DIR, '.png'),
-    limits: {fileSize: MAX_IMAGE_BYTES}
+    limits: {fileSize: MAX_AVATAR_BYTES}
 });
 
 const bannerUpload = multer({

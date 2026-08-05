@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import {resolveApiUrl} from '../../../lib/nyxide-constants';
 import styles from './project-card.css';
 
 const ProjectCard = ({project}) => (
@@ -12,7 +13,7 @@ const ProjectCard = ({project}) => (
             {project.thumbnailUrl ? (
                 <img
                     className={styles.thumbnail}
-                    src={project.thumbnailUrl}
+                    src={resolveApiUrl(project.thumbnailUrl)}
                     alt={project.title}
                 />
             ) : (

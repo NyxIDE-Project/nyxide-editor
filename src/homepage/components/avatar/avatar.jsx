@@ -2,13 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 
+import {resolveApiUrl} from '../../../lib/nyxide-constants';
 import styles from './avatar.css';
 
 const Avatar = ({avatarUrl, username, size, className}) => (
     avatarUrl ? (
         <img
             className={classNames(styles.avatar, className)}
-            src={avatarUrl}
+            src={resolveApiUrl(avatarUrl)}
             alt={username || 'User avatar'}
             style={{width: size, height: size}}
         />

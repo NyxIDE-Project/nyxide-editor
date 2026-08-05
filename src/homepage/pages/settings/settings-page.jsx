@@ -4,7 +4,7 @@ import {Redirect} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
 import {putJson, postForm} from '../../lib/api';
-import {MAX_BANNER_BYTES} from '../../../lib/nyxide-constants';
+import {MAX_BANNER_BYTES, MAX_AVATAR_BYTES, resolveApiUrl} from '../../../lib/nyxide-constants';
 import UsernameForm from './username-form.jsx';
 
 import styles from '../page.css';
@@ -18,7 +18,7 @@ class SettingsForm extends React.Component {
             bio: props.user.bio || '',
             avatarFile: null,
             bannerFile: null,
-            bannerPreviewUrl: props.user.bannerUrl || null,
+            bannerPreviewUrl: resolveApiUrl(props.user.bannerUrl) || null,
             saved: false,
             error: null,
             isSaving: false
@@ -40,7 +40,12 @@ class SettingsForm extends React.Component {
         this.setState({bio: e.target.value, saved: false});
     }
     handleAvatarChange (e) {
-        this.setState({avatarFile: e.target.files[0] || null, saved: false});
+        const file = e.target.files[0] || null;
+        if (file && file.size > MAX_AVATAR_BYTES) {
+            this.setState({error: 'That image is larger than the 1MB profile picture limit.'});
+            return;
+        }
+        this.setState({avatarFile: file, saved: false, error: null});
     }
     handleBannerChange (e) {
         const file = e.target.files[0] || null;
@@ -139,7 +144,7 @@ class SettingsForm extends React.Component {
                         />
                     </label>
                     <label className={styles.fieldLabel}>
-                        Profile Picture
+                        Profile Picture (max 1MB)
                         <input
                             type="file"
                             accept="image/*"

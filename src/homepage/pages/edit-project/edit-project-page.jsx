@@ -3,7 +3,7 @@ import {Redirect, withRouter} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
 import {get, putJson, putForm} from '../../lib/api';
-import {MAX_UPLOAD_BYTES} from '../../../lib/nyxide-constants';
+import {MAX_UPLOAD_BYTES, resolveApiUrl} from '../../../lib/nyxide-constants';
 import {formatBytes} from '../../../lib/tw-bytes-utils';
 import TagInput from '../../components/tag-input/tag-input.jsx';
 
@@ -60,7 +60,7 @@ class EditProjectForm extends React.Component {
                     notesAndCredits: project.notesAndCredits,
                     tags: project.tags || [],
                     currentFileSize: project.fileSize,
-                    thumbnailPreviewUrl: project.thumbnailUrl
+                    thumbnailPreviewUrl: resolveApiUrl(project.thumbnailUrl)
                 });
             })
             .catch(() => this.setState({loading: false, notFound: true}));

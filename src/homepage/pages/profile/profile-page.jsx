@@ -7,6 +7,7 @@ import FollowButton from '../../components/follow-button/follow-button.jsx';
 import ProjectGrid from '../../components/project-grid/project-grid.jsx';
 import ReportModal from '../../components/report-modal/report-modal.jsx';
 import {get} from '../../lib/api';
+import {resolveApiUrl} from '../../../lib/nyxide-constants';
 
 import pageStyles from '../page.css';
 import styles from './profile-page.css';
@@ -75,7 +76,7 @@ class ProfilePage extends React.Component {
             <div>
                 <div
                     className={styles.banner}
-                    style={profile.bannerUrl ? {backgroundImage: `url(${profile.bannerUrl})`} : null}
+                    style={profile.bannerUrl ? {backgroundImage: `url(${resolveApiUrl(profile.bannerUrl)})`} : null}
                 />
 
                 <div className={styles.header}>
