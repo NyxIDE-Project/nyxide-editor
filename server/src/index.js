@@ -1,10 +1,12 @@
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 const session = require('express-session');
 const SqliteSessionStore = require('./lib/sqlite-session-store');
 const db = require('./db');
 const {
-    PORT, SESSION_SECRET, IS_PRODUCTION, ADMIN_USERNAMES, OWNER_USERNAME, TURNSTILE_SITE_KEY
+    PORT, SESSION_SECRET, IS_PRODUCTION, ADMIN_USERNAMES, OWNER_USERNAME, TURNSTILE_SITE_KEY,
+    CORS_ORIGINS
 } = require('./config');
 const {attachUser} = require('./middleware/auth');
 const errorHandler = require('./middleware/error-handler');
@@ -42,6 +44,10 @@ if (OWNER_USERNAME) {
     }
 }
 
+app.use(cors({
+    origin: CORS_ORIGINS,
+    credentials: true
+}));
 app.use(express.json());
 app.use(session({
     store: sessionStore,
@@ -50,7 +56,8 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        sameSite: 'lax',
+        // cross-subdomain requires "none", which requires "secure"
+        sameSite: IS_PRODUCTION ? 'none' : 'lax',
         secure: IS_PRODUCTION,
         maxAge: 30 * 24 * 60 * 60 * 1000
     }

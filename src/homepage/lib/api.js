@@ -1,3 +1,5 @@
+import {API_BASE_URL} from '../../lib/nyxide-constants';
+
 class ApiError extends Error {
     constructor (message, status) {
         super(message);
@@ -14,7 +16,7 @@ const parseResponse = async res => {
     return body;
 };
 
-const request = (path, options = {}) => fetch(path, {
+const request = (path, options = {}) => fetch(`${API_BASE_URL}${path}`, {
     credentials: 'include',
     ...options
 }).then(parseResponse);

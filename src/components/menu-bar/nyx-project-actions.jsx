@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
 
 import ReportModal from '../../homepage/components/report-modal/report-modal.jsx';
+import {API_BASE_URL} from '../../lib/nyxide-constants';
 
 import styles from './nyx-project-actions.css';
 
@@ -53,7 +54,7 @@ class NyxProjectActions extends React.Component {
         this.handleCloseReport = this.handleCloseReport.bind(this);
     }
     componentDidMount () {
-        fetch('/api/auth/me', {credentials: 'include'})
+        fetch(`${API_BASE_URL}/api/auth/me`, {credentials: 'include'})
             .then(res => res.json())
             .then(data => this.setState({isLoggedIn: Boolean(data.user)}))
             .catch(() => this.setState({isLoggedIn: false}));
@@ -76,7 +77,7 @@ class NyxProjectActions extends React.Component {
         const flagKey = kind === 'like' ? 'isLikedByViewer' : 'isFavoritedByViewer';
         const isActive = this.state[flagKey];
         this.setState({isBusy: true});
-        fetch(`/api/projects/${this.props.projectId}/${kind}`, {
+        fetch(`${API_BASE_URL}/api/projects/${this.props.projectId}/${kind}`, {
             method: isActive ? 'DELETE' : 'POST',
             credentials: 'include'
         })

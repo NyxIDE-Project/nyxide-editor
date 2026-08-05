@@ -7,7 +7,7 @@ import VM from 'scratch-vm';
 
 import dataURItoBlob from '../../lib/data-uri-to-blob';
 import {formatBytes} from '../../lib/tw-bytes-utils';
-import {MAX_UPLOAD_BYTES} from '../../lib/nyxide-constants';
+import {MAX_UPLOAD_BYTES, API_BASE_URL} from '../../lib/nyxide-constants';
 import {setProjectId} from '../../reducers/project-state';
 import TagInput from '../../homepage/components/tag-input/tag-input.jsx';
 
@@ -116,7 +116,7 @@ class NyxSaveButton extends React.Component {
         };
     }
     componentDidMount () {
-        fetch('/api/auth/me', {credentials: 'include'})
+        fetch(`${API_BASE_URL}/api/auth/me`, {credentials: 'include'})
             .then(res => res.json())
             .then(data => this.setState({
                 isLoggedIn: Boolean(data.user),
@@ -187,7 +187,7 @@ class NyxSaveButton extends React.Component {
             const formData = new FormData();
             formData.append('file', fileBlob, 'project.sb3');
             formData.append('thumbnail', thumbnailBlob, 'thumbnail.png');
-            const res = await fetch(`/api/projects/${this.props.projectId}/file`, {
+            const res = await fetch(`${API_BASE_URL}/api/projects/${this.props.projectId}/file`, {
                 method: 'PUT',
                 credentials: 'include',
                 body: formData
@@ -251,7 +251,7 @@ class NyxSaveButton extends React.Component {
             formData.append('description', this.state.description);
             formData.append('notesAndCredits', this.state.notesAndCredits);
             formData.append('tags', JSON.stringify(this.state.tags));
-            const res = await fetch('/api/projects', {
+            const res = await fetch(`${API_BASE_URL}/api/projects`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formData

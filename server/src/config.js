@@ -33,10 +33,8 @@ module.exports = {
     HOMEPAGE_FEATURE_THRESHOLD: Number(process.env.HOMEPAGE_FEATURE_THRESHOLD) || 100,
     HOMEPAGE_FEATURE_DURATION_MS: Number(process.env.HOMEPAGE_FEATURE_DURATION_MS) || (5 * 24 * 60 * 60 * 1000),
     IS_PRODUCTION: process.env.NODE_ENV === 'production',
-    // Cloudflare Turnstile: TURNSTILE_SITE_KEY is public (sent to the client via GET
-    // /api/config), TURNSTILE_SECRET_KEY is private and only ever used server-side to verify
-    // a token against Cloudflare's siteverify endpoint. Cloudflare's published test keypair
-    // is the default so registration/login work out of the box in dev without any setup.
+    CORS_ORIGINS: (process.env.CORS_ORIGINS || 'https://ide.nyxdev.app')
+        .split(',').map(s => s.trim()).filter(Boolean),
     TURNSTILE_SITE_KEY: process.env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA',
     TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA',
     // Minimum time between username changes.

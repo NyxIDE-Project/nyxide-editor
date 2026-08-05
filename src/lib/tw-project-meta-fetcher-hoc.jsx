@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import log from './log';
+import {API_BASE_URL} from './nyxide-constants';
 
 import {setProjectTitle} from '../reducers/project-title';
 import {setAuthor, setDescription, setTags, setStats} from '../reducers/tw';
 
 export const fetchProjectMeta = async projectId => {
-    const res = await fetch(`/api/projects/${projectId}`);
+    const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}`, {credentials: 'include'});
     if (!res.ok) {
         if (res.status === 404) {
             throw new Error('Project not found');

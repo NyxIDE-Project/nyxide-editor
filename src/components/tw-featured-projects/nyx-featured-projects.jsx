@@ -7,6 +7,7 @@ import {FormattedMessage} from 'react-intl';
 // BrowserRouter.
 import ProjectGrid from '../../homepage/components/project-grid/project-grid.jsx';
 import {APP_NAME} from '../../lib/brand.js';
+import {API_BASE_URL} from '../../lib/nyxide-constants';
 
 import styles from './nyx-featured-projects.css';
 
@@ -21,7 +22,7 @@ class NyxFeaturedProjects extends React.Component {
         };
     }
     componentDidMount () {
-        fetch('/api/projects/featured', {credentials: 'include'})
+        fetch(`${API_BASE_URL}/api/projects/featured`, {credentials: 'include'})
             .then(res => res.json())
             .then(data => this.setState({items: data.items || [], loading: false}))
             .catch(() => this.setState({loading: false}));

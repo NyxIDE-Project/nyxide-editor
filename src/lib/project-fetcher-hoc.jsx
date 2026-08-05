@@ -22,6 +22,7 @@ import {
 
 import log from './log';
 import storage from './storage';
+import {API_BASE_URL} from './nyxide-constants';
 import {ProjectUnsharedError, ProjectFetchError} from './tw-load-project-error';
 
 import VM from 'scratch-vm';
@@ -208,8 +209,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
     };
     ProjectFetcherComponent.defaultProps = {
         assetHost: 'https://assets.scratch.mit.edu',
-        // nyxide: projects are hosted by our own server, not Scratch's cloud
-        projectHost: '/api/projects'
+        projectHost: `${API_BASE_URL}/api/projects`
     };
 
     const mapStateToProps = state => ({

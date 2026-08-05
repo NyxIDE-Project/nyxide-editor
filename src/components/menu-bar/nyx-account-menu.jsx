@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 
+import {API_BASE_URL} from '../../lib/nyxide-constants';
 import Avatar from '../../homepage/components/avatar/avatar.jsx';
 import MenuLabel from './tw-menu-label.jsx';
 import MenuBarMenu from './menu-bar-menu.jsx';
@@ -27,7 +28,7 @@ class NyxAccountMenu extends React.Component {
         this.handleLogout = this.handleLogout.bind(this);
     }
     componentDidMount () {
-        fetch('/api/auth/me', {credentials: 'include'})
+        fetch(`${API_BASE_URL}/api/auth/me`, {credentials: 'include'})
             .then(res => res.json())
             .then(data => this.setState({user: data.user, loading: false}))
             .catch(() => this.setState({loading: false}));
@@ -39,7 +40,7 @@ class NyxAccountMenu extends React.Component {
         this.setState({isOpen: false});
     }
     handleLogout () {
-        fetch('/api/auth/logout', {method: 'POST', credentials: 'include'})
+        fetch(`${API_BASE_URL}/api/auth/logout`, {method: 'POST', credentials: 'include'})
             .then(() => {
                 window.location.href = '/';
             });
