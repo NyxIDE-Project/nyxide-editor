@@ -2,3 +2,4 @@
 - Add google login support
 - Add "People who want to be featured" section where it shows projects that are just about to reach the threshold of being featured
 - Add an icon picker in the costume editor that pulls from FontAwesome
+- Add cloud varible support
