@@ -62,6 +62,16 @@ const messages = defineMessages({
         defaultMessage: 'Run Scratch projects faster',
         description: 'Title of homepage',
         id: 'tw.guiDefaultTitle'
+    },
+    projectDescriptionHeading: {
+        defaultMessage: 'Description',
+        description: "Heading above a project's description on the player page",
+        id: 'nyx.player.descriptionHeading'
+    },
+    projectCreditsHeading: {
+        defaultMessage: 'Notes and Credits',
+        description: "Heading above a project's notes and credits on the player page",
+        id: 'nyx.player.creditsHeading'
     }
 });
 
@@ -347,6 +357,20 @@ class Interface extends React.Component {
                             {projectId !== '0' && (
                                 <div className={styles.section}>
                                     <NyxProjectActions />
+                                </div>
+                            )}
+                            {projectId !== '0' && description.instructions &&
+                                description.instructions !== 'unshared' && (
+                                <div className={styles.section}>
+                                    <h3>{intl.formatMessage(messages.projectDescriptionHeading)}</h3>
+                                    <p className={styles.projectText}>{description.instructions}</p>
+                                </div>
+                            )}
+                            {projectId !== '0' && description.credits &&
+                                description.credits !== 'unshared' && (
+                                <div className={styles.section}>
+                                    <h3>{intl.formatMessage(messages.projectCreditsHeading)}</h3>
+                                    <p className={styles.projectText}>{description.credits}</p>
                                 </div>
                             )}
                             {projectId !== '0' && (

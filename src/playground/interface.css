@@ -70,6 +70,10 @@ a {
     margin: 8px 0 8px 0;
 }
 
+.project-text {
+    white-space: pre-line;
+}
+
 .footer {
     padding: 10px 0;
     margin-top: auto;
