@@ -392,6 +392,7 @@ class Interface extends React.Component {
                                     <ProjectTags />
                                 </div>
                             )}
+                            {/* 
                             <div className={styles.section}>
                                 <p>
                                     <FormattedMessage
@@ -405,6 +406,7 @@ class Interface extends React.Component {
                                     />
                                 </p>
                             </div>
+                            */}
                             <div className={styles.section}>
                                 <NyxFeaturedProjects />
                             </div>

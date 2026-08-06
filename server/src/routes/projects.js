@@ -4,6 +4,7 @@ const usersModel = require('../models/users');
 const projectsModel = require('../models/projects');
 const {requireAuth, blockIfBanned, loadProject, requireProjectOwnership} = require('../middleware/auth');
 const {projectFields, thumbnailField, removeFile} = require('../middleware/upload');
+const {projectWriteLimiter} = require('../middleware/rate-limit');
 const {serializeProject, serializeProjectSummary} = require('../lib/serialize');
 
 const router = express.Router();
@@ -122,7 +123,7 @@ router.get('/:id/thumbnail', loadProject, (req, res) => {
     res.sendFile(path.resolve(req.project.thumbnail_path));
 });
 
-router.post('/', requireAuth, blockIfBanned, projectFields, (req, res) => {
+router.post('/', requireAuth, blockIfBanned, projectWriteLimiter, projectFields, (req, res) => {
     const file = req.files && req.files.file && req.files.file[0];
     const thumbnail = req.files && req.files.thumbnail && req.files.thumbnail[0];
     if (!file) {
@@ -145,39 +146,43 @@ router.post('/', requireAuth, blockIfBanned, projectFields, (req, res) => {
     res.status(201).json(serializeProject(project, req.user, req.user.id));
 });
 
-router.put('/:id', requireAuth, blockIfBanned, loadProject, requireProjectOwnership, (req, res) => {
-    const title = typeof req.body.title === 'string' && req.body.title.trim() ? req.body.title.trim().slice(0, 100) : req.project.title;
-    const description = typeof req.body.description === 'string' ? req.body.description.slice(0, 2000) : req.project.description;
-    const notesAndCredits = typeof req.body.notesAndCredits === 'string' ?
-        req.body.notesAndCredits.slice(0, 2000) : req.project.notes_and_credits;
+router.put('/:id', requireAuth, blockIfBanned, projectWriteLimiter, loadProject, requireProjectOwnership,
+    (req, res) => {
+        const title = typeof req.body.title === 'string' && req.body.title.trim() ?
+            req.body.title.trim().slice(0, 100) : req.project.title;
+        const description = typeof req.body.description === 'string' ?
+            req.body.description.slice(0, 2000) : req.project.description;
+        const notesAndCredits = typeof req.body.notesAndCredits === 'string' ?
+            req.body.notesAndCredits.slice(0, 2000) : req.project.notes_and_credits;
 
-    const updated = projectsModel.updateMeta(req.project.id, {title, description, notesAndCredits});
-    if (Object.prototype.hasOwnProperty.call(req.body, 'tags')) {
-        projectsModel.setTags(req.project.id, parseTagsField(req.body.tags));
-    }
-    res.json(serializeProject(updated, req.user, req.user.id));
-});
-
-router.put('/:id/file', requireAuth, blockIfBanned, loadProject, requireProjectOwnership, projectFields, (req, res) => {
-    const file = req.files && req.files.file && req.files.file[0];
-    const thumbnail = req.files && req.files.thumbnail && req.files.thumbnail[0];
-    if (!file) {
-        return res.status(400).json({error: 'A project file is required'});
-    }
-    const previousFile = req.project.file_path;
-    const previousThumbnail = req.project.thumbnail_path;
-
-    const updated = projectsModel.updateFile(req.project.id, {
-        filePath: file.path,
-        thumbnailPath: thumbnail ? thumbnail.path : previousThumbnail,
-        fileSize: file.size
+        const updated = projectsModel.updateMeta(req.project.id, {title, description, notesAndCredits});
+        if (Object.prototype.hasOwnProperty.call(req.body, 'tags')) {
+            projectsModel.setTags(req.project.id, parseTagsField(req.body.tags));
+        }
+        res.json(serializeProject(updated, req.user, req.user.id));
     });
 
-    removeFile(previousFile);
-    if (thumbnail) removeFile(previousThumbnail);
+router.put('/:id/file', requireAuth, blockIfBanned, projectWriteLimiter, loadProject, requireProjectOwnership,
+    projectFields, (req, res) => {
+        const file = req.files && req.files.file && req.files.file[0];
+        const thumbnail = req.files && req.files.thumbnail && req.files.thumbnail[0];
+        if (!file) {
+            return res.status(400).json({error: 'A project file is required'});
+        }
+        const previousFile = req.project.file_path;
+        const previousThumbnail = req.project.thumbnail_path;
 
-    res.json(serializeProject(updated, req.user, req.user.id));
-});
+        const updated = projectsModel.updateFile(req.project.id, {
+            filePath: file.path,
+            thumbnailPath: thumbnail ? thumbnail.path : previousThumbnail,
+            fileSize: file.size
+        });
+
+        removeFile(previousFile);
+        if (thumbnail) removeFile(previousThumbnail);
+
+        res.json(serializeProject(updated, req.user, req.user.id));
+    });
 
 router.put('/:id/thumbnail', requireAuth, blockIfBanned, loadProject, requireProjectOwnership, thumbnailField, (req, res) => {
     if (!req.file) {
