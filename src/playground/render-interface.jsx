@@ -35,6 +35,7 @@ import ProjectInput from '../components/tw-project-input/project-input.jsx';
 import NyxFeaturedProjects from '../components/tw-featured-projects/nyx-featured-projects.jsx';
 import UntrustedExtensionsWarning from '../components/tw-untrusted-extensions/untrusted-extensions-warning.jsx';
 import NyxProjectActions from '../components/menu-bar/nyx-project-actions.jsx';
+import NyxProjectHeader from '../components/menu-bar/nyx-project-header.jsx';
 import ProjectTags from '../components/tw-project-tags/project-tags.jsx';
 import BrowserModal from '../components/browser-modal/browser-modal.jsx';
 import CloudVariableBadge from '../containers/tw-cloud-variable-badge.jsx';
@@ -244,6 +245,9 @@ class Interface extends React.Component {
             isPlayerOnly,
             isRtl,
             projectId,
+            projectTitle,
+            authorUsername,
+            authorThumbnailUrl,
             vm,
             /* eslint-enable no-unused-vars */
             ...props
@@ -266,6 +270,7 @@ class Interface extends React.Component {
                             canManageFiles
                             canChangeTheme
                             enableSeeInside
+                            showAuthorInfo={false}
                             onClickAddonSettings={handleClickAddonSettings}
                         />
                     </div>
@@ -277,6 +282,15 @@ class Interface extends React.Component {
                         width: `${Math.max(480, props.customStageSize.width) + 2}px`
                     }) : null}
                 >
+                    {isHomepage && projectId !== '0' && (
+                        <div className={styles.section}>
+                            <NyxProjectHeader
+                                title={projectTitle}
+                                authorUsername={authorUsername}
+                                authorThumbnailUrl={authorThumbnailUrl}
+                            />
+                        </div>
+                    )}
                     <GUI
                         onClickAddonSettings={handleClickAddonSettings}
                         onUpdateProjectTitle={this.handleUpdateProjectTitle}
@@ -361,14 +375,14 @@ class Interface extends React.Component {
                             )}
                             {projectId !== '0' && description.instructions &&
                                 description.instructions !== 'unshared' && (
-                                <div className={styles.section}>
+                                <div className={classNames(styles.section, styles.projectInfoBox)}>
                                     <h3>{intl.formatMessage(messages.projectDescriptionHeading)}</h3>
                                     <p className={styles.projectText}>{description.instructions}</p>
                                 </div>
                             )}
                             {projectId !== '0' && description.credits &&
                                 description.credits !== 'unshared' && (
-                                <div className={styles.section}>
+                                <div className={classNames(styles.section, styles.projectInfoBox)}>
                                     <h3>{intl.formatMessage(messages.projectCreditsHeading)}</h3>
                                     <p className={styles.projectText}>{description.credits}</p>
                                 </div>
@@ -419,6 +433,9 @@ Interface.propTypes = {
     isPlayerOnly: PropTypes.bool,
     isRtl: PropTypes.bool,
     projectId: PropTypes.string,
+    projectTitle: PropTypes.string,
+    authorUsername: PropTypes.string,
+    authorThumbnailUrl: PropTypes.string,
     // eslint-disable-next-line react/forbid-prop-types
     vm: PropTypes.object
 };
@@ -432,7 +449,10 @@ const mapStateToProps = state => ({
     isPlayerOnly: state.scratchGui.mode.isPlayerOnly,
     isRtl: state.locales.isRtl,
     vm: state.scratchGui.vm,
-    projectId: state.scratchGui.projectState.projectId
+    projectId: state.scratchGui.projectState.projectId,
+    projectTitle: state.scratchGui.projectTitle,
+    authorUsername: state.scratchGui.tw.author.username,
+    authorThumbnailUrl: state.scratchGui.tw.author.thumbnail
 });
 
 const mapDispatchToProps = () => ({});

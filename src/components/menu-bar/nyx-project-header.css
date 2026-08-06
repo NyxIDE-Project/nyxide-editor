@@ -1,0 +1,35 @@
+@import "../../css/colors.css";
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.title,
+.title-truncatable {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.title-truncatable {
+    cursor: pointer;
+}
+
+.author {
+    font-size: 0.85rem;
+    color: $text-primary;
+    opacity: 0.75;
+    text-decoration: none;
+}
+
+.author:hover {
+    text-decoration: underline;
+}

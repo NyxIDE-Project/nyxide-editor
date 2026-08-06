@@ -61,7 +61,7 @@ a {
     flex-direction: column;
 }
 .player-only .center {
-    margin: auto;
+    margin: 0 auto;
 }
 .menu {
     margin-bottom: 8px;
@@ -72,6 +72,16 @@ a {
 
 .project-text {
     white-space: pre-line;
+}
+
+.project-info-box {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid $looks-transparent;
+    background-color: $looks-light-transparent;
+}
+.project-info-box h3 {
+    margin-bottom: 0.3rem;
 }
 
 .footer {

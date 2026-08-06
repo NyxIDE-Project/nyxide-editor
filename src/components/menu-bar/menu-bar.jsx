@@ -442,6 +442,8 @@ class MenuBar extends React.Component {
         };
     }
     render () {
+        const showAuthorInfo = this.props.showAuthorInfo &&
+            this.props.authorUsername && this.props.authorUsername !== this.props.username;
         const saveNowMessage = (
             <FormattedMessage
                 defaultMessage="Save now"
@@ -950,7 +952,7 @@ class MenuBar extends React.Component {
                                 />
                             </MenuBarItemTooltip>
                         </div>
-                    ) : ((this.props.authorUsername && this.props.authorUsername !== this.props.username) ? (
+                    ) : (showAuthorInfo ? (
                         <AuthorInfo
                             className={styles.authorInfo}
                             imageUrl={this.props.authorThumbnailUrl}
@@ -1140,6 +1142,7 @@ MenuBar.propTypes = {
     sessionExists: PropTypes.bool,
     settingsMenuOpen: PropTypes.bool,
     shouldSaveBeforeTransition: PropTypes.func,
+    showAuthorInfo: PropTypes.bool,
     showSaveFilePicker: PropTypes.func,
     showComingSoon: PropTypes.bool,
     username: PropTypes.string,
@@ -1148,7 +1151,8 @@ MenuBar.propTypes = {
 };
 
 MenuBar.defaultProps = {
-    onShare: () => {}
+    onShare: () => {},
+    showAuthorInfo: true
 };
 
 const mapStateToProps = (state, ownProps) => {
