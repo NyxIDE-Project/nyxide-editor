@@ -43,7 +43,7 @@ module.exports = {
     // Repo shown in the homepage's "recent commits" box. A GitHub personal access token isn't
     // required for a public repo, but can be set to raise the (otherwise 60/hr, shared across
     // all visitors since this is fetched server-side) unauthenticated rate limit.
-    GITHUB_REPO: process.env.GITHUB_REPO || 'arc360alt/nyxide-editor',
+    GITHUB_REPO: process.env.GITHUB_REPO || 'NyxIDE-Project/nyxide-editor',
     GITHUB_TOKEN: process.env.GITHUB_TOKEN || null,
     GITHUB_COMMITS_CACHE_MS: Number(process.env.GITHUB_COMMITS_CACHE_MS) || (5 * 60 * 1000)
 };
