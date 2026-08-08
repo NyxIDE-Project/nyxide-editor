@@ -18,6 +18,8 @@ import AdminPage from './pages/admin/admin-page.jsx';
 import TermsPage from './pages/legal/terms-page.jsx';
 import PrivacyPage from './pages/legal/privacy-page.jsx';
 import GuidelinesPage from './pages/legal/guidelines-page.jsx';
+import DesktopPage from './pages/desktop/desktop-page.jsx';
+import NotFoundPage from './pages/not-found/not-found-page.jsx';
 
 import styles from './app.css';
 
@@ -97,6 +99,12 @@ const App = () => (
                     path="/guidelines"
                     component={GuidelinesPage}
                 />
+                <Route
+                    exact
+                    path="/desktop"
+                    component={DesktopPage}
+                />
+                <Route component={NotFoundPage} />
             </Switch>
         </main>
         <Footer />

@@ -160,6 +160,13 @@ const Footer = () => (
                             id="tw.footer.player"
                         />
                     </a>
+                    <a href="/desktop">
+                        <FormattedMessage
+                            defaultMessage="Desktop"
+                            description="Link in footer to the desktop app download page"
+                            id="tw.footer.desktop"
+                        />
+                    </a>
                 </div>
                 <div className={styles.footerSection}>
                     <div className={styles.footerSectionHeading}>

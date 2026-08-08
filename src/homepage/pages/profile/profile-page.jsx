@@ -6,6 +6,7 @@ import Avatar from '../../components/avatar/avatar.jsx';
 import FollowButton from '../../components/follow-button/follow-button.jsx';
 import ProjectGrid from '../../components/project-grid/project-grid.jsx';
 import ReportModal from '../../components/report-modal/report-modal.jsx';
+import MascotMessage from '../../components/mascot-message/mascot-message.jsx';
 import {get} from '../../lib/api';
 import {resolveApiUrl} from '../../../lib/nyxide-constants';
 
@@ -69,7 +70,11 @@ class ProfilePage extends React.Component {
             return <div className={pageStyles.loading}>Loading…</div>;
         }
         if (this.state.notFound || !this.state.profile) {
-            return <div className={pageStyles.loading}>User not found.</div>;
+            return (
+                <MascotMessage mascot="404">
+                    {"This user doesn't exist."}
+                </MascotMessage>
+            );
         }
         const {profile} = this.state;
         return (

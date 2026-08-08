@@ -28,6 +28,12 @@ const Footer = () => (
                     >
                         {'Player'}
                     </a>
+                    <Link
+                        className={styles.link}
+                        to="/desktop"
+                    >
+                        {'Desktop'}
+                    </Link>
                 </div>
                 <div className={styles.column}>
                     <div className={styles.columnHeading}>{'Info'}</div>

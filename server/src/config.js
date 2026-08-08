@@ -45,5 +45,8 @@ module.exports = {
     // all visitors since this is fetched server-side) unauthenticated rate limit.
     GITHUB_REPO: process.env.GITHUB_REPO || 'NyxIDE-Project/nyxide-editor',
     GITHUB_TOKEN: process.env.GITHUB_TOKEN || null,
-    GITHUB_COMMITS_CACHE_MS: Number(process.env.GITHUB_COMMITS_CACHE_MS) || (5 * 60 * 1000)
+    GITHUB_COMMITS_CACHE_MS: Number(process.env.GITHUB_COMMITS_CACHE_MS) || (5 * 60 * 1000),
+    // Repo whose latest release provides the desktop app downloads.
+    DESKTOP_REPO: process.env.DESKTOP_REPO || 'NyxIDE-Project/nyxide-desktop',
+    GITHUB_RELEASE_CACHE_MS: Number(process.env.GITHUB_RELEASE_CACHE_MS) || (10 * 60 * 1000)
 };

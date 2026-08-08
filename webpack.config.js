@@ -60,7 +60,7 @@ const base = {
                 // everything else under nyxide's own routes falls back to the homepage SPA
                 {
                     // eslint-disable-next-line max-len
-                    from: /^\/(explore|search|users|upload|my-projects|projects|settings|login|register|admin|terms|privacy|guidelines)(\/.*)?$/,
+                    from: /^\/(explore|search|users|upload|my-projects|projects|settings|login|register|admin|terms|privacy|guidelines|desktop)(\/.*)?$/,
                     to: '/index.html'
                 }
             ]

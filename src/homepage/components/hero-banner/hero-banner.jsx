@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import {useLocation} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
-import {APP_NAME} from '../../../lib/brand';
 
 import styles from './hero-banner.css';
 
@@ -48,34 +47,11 @@ const HeroBanner = () => {
                         {'Try it out'}
                     </a>
                 </div>
-                <div className={styles.videoCard}>
-                    <div className={styles.videoHeader}>
-                        <img
-                            className={styles.videoAvatar}
-                            src="/logo.png"
-                            alt=""
-                        />
-                        <div>
-                            <div className={styles.videoTitle}>{`What IS ${APP_NAME}?`}</div>
-                            <div className={styles.videoChannel}>{APP_NAME}</div>
-                        </div>
-                    </div>
-                    <div className={styles.videoPlaceholder}>
-                        <div className={styles.playCircle}>
-                            <svg
-                                width="22"
-                                height="22"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M8 5v14l11-7z"
-                                />
-                            </svg>
-                        </div>
-                        <div className={styles.placeholderLabel}>{'Video coming soon'}</div>
-                    </div>
-                </div>
+                <img
+                    className={styles.mascotImage}
+                    src="/mascot/default.svg"
+                    alt="NyxIDE mascot"
+                />
             </div>
         </div>
     );

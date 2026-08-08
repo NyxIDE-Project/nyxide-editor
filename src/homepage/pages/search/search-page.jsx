@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useLocation} from 'react-router-dom';
 
 import ProjectGrid from '../../components/project-grid/project-grid.jsx';
+import MascotMessage from '../../components/mascot-message/mascot-message.jsx';
 import {get} from '../../lib/api';
 
 import styles from '../page.css';
@@ -56,7 +57,11 @@ const SearchPage = () => {
             ) : (
                 <ProjectGrid
                     items={items}
-                    emptyMessage="No projects matched your search."
+                    emptyMessage={(
+                        <MascotMessage mascot="404">
+                            {'No projects matched your search.'}
+                        </MascotMessage>
+                    )}
                 />
             )}
         </div>

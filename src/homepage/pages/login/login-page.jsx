@@ -6,6 +6,7 @@ import {AuthContext} from '../../contexts/auth-context.jsx';
 import TurnstileWidget from '../../components/turnstile-widget/turnstile-widget.jsx';
 
 import styles from '../page.css';
+import loginStyles from './login-page.css';
 
 class LoginForm extends React.Component {
     constructor (props) {
@@ -53,6 +54,11 @@ class LoginForm extends React.Component {
     render () {
         return (
             <div>
+                <img
+                    className={loginStyles.mascot}
+                    src="/mascot/default-cropped.svg"
+                    alt=""
+                />
                 <h1 className={styles.heading}>Log In</h1>
                 <form
                     className={styles.form}
