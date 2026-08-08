@@ -6,6 +6,7 @@ import {AuthContext} from '../../contexts/auth-context.jsx';
 import TurnstileWidget from '../../components/turnstile-widget/turnstile-widget.jsx';
 
 import styles from '../page.css';
+import registerStyles from './register-page.css';
 
 class RegisterForm extends React.Component {
     constructor (props) {
@@ -60,6 +61,11 @@ class RegisterForm extends React.Component {
     render () {
         return (
             <div>
+                <img
+                    className={registerStyles.mascot}
+                    src="/mascot/default-cropped.svg"
+                    alt=""
+                />
                 <h1 className={styles.heading}>Sign Up</h1>
                 <form
                     className={styles.form}
