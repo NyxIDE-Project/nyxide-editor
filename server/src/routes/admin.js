@@ -4,10 +4,11 @@ const projectsModel = require('../models/projects');
 const reportsModel = require('../models/reports');
 const notificationsModel = require('../models/notifications');
 const eventsModel = require('../models/events');
+const bannerModel = require('../models/banner');
 const {requireAdmin, loadProject} = require('../middleware/auth');
 const {removeFile} = require('../middleware/upload');
 const {
-    serializeMe, serializeProject, serializeProjectSummary, serializeReport, serializeEvent
+    serializeMe, serializeProject, serializeProjectSummary, serializeReport, serializeEvent, serializeBanner
 } = require('../lib/serialize');
 
 const router = express.Router();
@@ -221,6 +222,34 @@ router.delete('/events/:id', (req, res) => {
     }
     eventsModel.remove(event.id);
     res.status(204).end();
+});
+
+// --- Site banner ---
+// A single site-wide announcement bar shown under the topbar. Singleton row (id=1 always),
+// see server/src/models/banner.js.
+
+router.get('/banner', (req, res) => {
+    res.json(serializeBanner(bannerModel.get()));
+});
+
+router.put('/banner', (req, res) => {
+    const enabled = Boolean(req.body.enabled);
+    const color = typeof req.body.color === 'string' && /^#[0-9a-f]{6}$/i.test(req.body.color) ?
+        req.body.color : '#4cff8e';
+    const content = typeof req.body.content === 'string' ? req.body.content.trim().slice(0, 300) : '';
+    const rawButtonText = typeof req.body.buttonText === 'string' ? req.body.buttonText.trim().slice(0, 40) : '';
+    const rawButtonUrl = typeof req.body.buttonUrl === 'string' ? req.body.buttonUrl.trim().slice(0, 500) : '';
+    // A button needs both a label and a destination - drop it entirely if only one was given
+    // rather than saving a half-configured button.
+    const hasButton = Boolean(rawButtonText && rawButtonUrl);
+    const updated = bannerModel.update({
+        enabled,
+        color,
+        content,
+        buttonText: hasButton ? rawButtonText : null,
+        buttonUrl: hasButton ? rawButtonUrl : null
+    });
+    res.json(serializeBanner(updated));
 });
 
 // --- Notifications ---

@@ -89,6 +89,14 @@ const serializeEvent = (event, author) => ({
     updatedAt: event.updated_at === event.created_at ? null : event.updated_at
 });
 
+const serializeBanner = banner => ({
+    enabled: Boolean(banner.enabled),
+    color: banner.color,
+    content: banner.content,
+    buttonText: banner.button_text,
+    buttonUrl: banner.button_url
+});
+
 module.exports = {
     serializeUser,
     serializeMe,
@@ -97,5 +105,6 @@ module.exports = {
     serializeProject,
     serializeReport,
     serializeNotification,
-    serializeEvent
+    serializeEvent,
+    serializeBanner
 };

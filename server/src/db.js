@@ -113,6 +113,16 @@ db.exec(`
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
+    CREATE TABLE IF NOT EXISTS site_banner (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        enabled INTEGER NOT NULL DEFAULT 0,
+        color TEXT NOT NULL DEFAULT '#4cff8e',
+        content TEXT NOT NULL DEFAULT '',
+        button_text TEXT,
+        button_url TEXT,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
     CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id);
     CREATE INDEX IF NOT EXISTS idx_follows_followee ON follows(followee_id);
     CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);

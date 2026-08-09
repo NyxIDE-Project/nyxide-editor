@@ -36,6 +36,7 @@ import NyxFeaturedProjects from '../components/tw-featured-projects/nyx-featured
 import UntrustedExtensionsWarning from '../components/tw-untrusted-extensions/untrusted-extensions-warning.jsx';
 import NyxProjectActions from '../components/menu-bar/nyx-project-actions.jsx';
 import NyxProjectHeader from '../components/menu-bar/nyx-project-header.jsx';
+import SiteBanner from '../homepage/components/site-banner/site-banner.jsx';
 import ProjectTags from '../components/tw-project-tags/project-tags.jsx';
 import BrowserModal from '../components/browser-modal/browser-modal.jsx';
 import CloudVariableBadge from '../containers/tw-cloud-variable-badge.jsx';
@@ -282,6 +283,7 @@ class Interface extends React.Component {
                         />
                     </div>
                 ) : null}
+                {isHomepage && <SiteBanner />}
                 <div
                     className={styles.center}
                     style={isPlayerOnly ? ({
