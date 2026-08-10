@@ -6,6 +6,7 @@ const {requireAuth, blockIfBanned, loadProject, requireProjectOwnership} = requi
 const {projectFields, thumbnailField, removeFile} = require('../middleware/upload');
 const {projectWriteLimiter} = require('../middleware/rate-limit');
 const {serializeProject, serializeProjectSummary} = require('../lib/serialize');
+const {HOMEPAGE_FEATURE_THRESHOLD} = require('../config');
 
 const router = express.Router();
 
@@ -94,6 +95,15 @@ router.get('/featured', (req, res) => {
     const items = projectsModel.listHomepageFeatured();
     res.json({
         items: items.map(project => serializeProjectSummary(project, usersModel.getById(project.owner_id)))
+    });
+});
+
+// Must come before GET /:id, otherwise "near-featured" would be parsed as a project id.
+router.get('/near-featured', (req, res) => {
+    const items = projectsModel.listNearFeatured();
+    res.json({
+        items: items.map(project => serializeProjectSummary(project, usersModel.getById(project.owner_id))),
+        threshold: HOMEPAGE_FEATURE_THRESHOLD
     });
 });
 

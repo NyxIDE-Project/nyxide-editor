@@ -75,6 +75,18 @@ const statements = {
         ORDER BY hf.featured_at DESC
         LIMIT ?
     `),
+    listNearFeatured: db.prepare(`
+        SELECT * FROM (
+            SELECT p.*,
+                (SELECT COUNT(*) FROM project_likes WHERE project_id = p.id) AS like_count,
+                (SELECT COUNT(*) FROM project_favorites WHERE project_id = p.id) AS favorite_count
+            FROM projects p
+            WHERE p.id NOT IN (SELECT project_id FROM homepage_featured)
+        ) sub
+        WHERE (like_count + favorite_count) >= ? AND (like_count + favorite_count) < ?
+        ORDER BY (like_count + favorite_count) DESC
+        LIMIT ?
+    `),
     getTags: db.prepare('SELECT tag FROM project_tags WHERE project_id = ? ORDER BY tag ASC'),
     clearTags: db.prepare('DELETE FROM project_tags WHERE project_id = ?'),
     addTag: db.prepare('INSERT OR IGNORE INTO project_tags (project_id, tag) VALUES (?, ?)'),
@@ -249,6 +261,15 @@ const listHomepageFeatured = (limit = 24) => {
     return statements.listHomepageFeatured.all(limit);
 };
 
+// Projects sitting at half the threshold or more, but not yet featured - close enough to
+// spotlight as "almost there" without surfacing projects that barely have any engagement.
+const NEAR_FEATURED_MIN_RATIO = 0.5;
+
+const listNearFeatured = (limit = 8) => {
+    const minEngagement = Math.ceil(HOMEPAGE_FEATURE_THRESHOLD * NEAR_FEATURED_MIN_RATIO);
+    return statements.listNearFeatured.all(minEngagement, HOMEPAGE_FEATURE_THRESHOLD, limit);
+};
+
 module.exports = {
     create,
     getById,
@@ -273,6 +294,7 @@ module.exports = {
     manualFeature,
     manualUnfeature,
     listHomepageFeatured,
+    listNearFeatured,
     queryProjects,
     getTags,
     setTags,

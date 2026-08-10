@@ -5,6 +5,7 @@ import {AuthContext} from '../../contexts/auth-context.jsx';
 import ProjectGrid from '../../components/project-grid/project-grid.jsx';
 import LoggedInBoxes from '../../components/logged-in-boxes/logged-in-boxes.jsx';
 import PopularTags from '../../components/popular-tags/popular-tags.jsx';
+import NearFeatured from '../../components/near-featured/near-featured.jsx';
 import MascotMessage from '../../components/mascot-message/mascot-message.jsx';
 import {get} from '../../lib/api';
 
@@ -58,6 +59,7 @@ class HomePage extends React.Component {
                         <ProjectGrid items={this.state.featured} />
                     </div>
                 )}
+                <NearFeatured />
                 <PopularTags />
                 <div className={styles.featuredSection}>
                     <div className={styles.sectionHeadingRow}>

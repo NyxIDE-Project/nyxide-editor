@@ -48,5 +48,14 @@ module.exports = {
     GITHUB_COMMITS_CACHE_MS: Number(process.env.GITHUB_COMMITS_CACHE_MS) || (5 * 60 * 1000),
     // Repo whose latest release provides the desktop app downloads.
     DESKTOP_REPO: process.env.DESKTOP_REPO || 'NyxIDE-Project/nyxide-desktop',
-    GITHUB_RELEASE_CACHE_MS: Number(process.env.GITHUB_RELEASE_CACHE_MS) || (10 * 60 * 1000)
+    GITHUB_RELEASE_CACHE_MS: Number(process.env.GITHUB_RELEASE_CACHE_MS) || (10 * 60 * 1000),
+    // "Log in with Google" - unset by default, which just hides the button (see GET
+    // /api/auth/google). Get these from a project at https://console.cloud.google.com/.
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || null,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || null,
+    // Must exactly match an "Authorized redirect URI" configured for that Google client.
+    GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI || 'https://nyxideapi.nyxdev.app/api/auth/google/callback',
+    // Where to send the browser back to once a Google login finishes - the frontend's own
+    // origin, since it's hosted separately from this API.
+    FRONTEND_URL: process.env.FRONTEND_URL || 'https://ide.nyxdev.app'
 };

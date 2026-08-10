@@ -4,9 +4,26 @@ import {Redirect} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
 import TurnstileWidget from '../../components/turnstile-widget/turnstile-widget.jsx';
+import {API_BASE_URL} from '../../../lib/nyxide-constants';
 
 import styles from '../page.css';
 import loginStyles from './login-page.css';
+
+const GOOGLE_ERROR_MESSAGES = {
+    google_not_configured: 'Google login is not available right now.',
+    google_state_mismatch: 'Google login failed (session expired). Please try again.',
+    google_denied: 'Google login was cancelled.',
+    google_token_failed: 'Google login failed. Please try again.',
+    google_profile_failed: 'Google login failed. Please try again.'
+};
+
+const googleErrorFromUrl = () => {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+    const code = new URLSearchParams(window.location.search).get('error');
+    return code && GOOGLE_ERROR_MESSAGES[code] ? GOOGLE_ERROR_MESSAGES[code] : null;
+};
 
 class LoginForm extends React.Component {
     constructor (props) {
@@ -15,7 +32,7 @@ class LoginForm extends React.Component {
             identifier: '',
             password: '',
             turnstileToken: null,
-            error: null,
+            error: googleErrorFromUrl(),
             isSubmitting: false
         };
         this.turnstileRef = React.createRef();
@@ -98,6 +115,13 @@ class LoginForm extends React.Component {
                         {this.state.isSubmitting ? 'Logging In…' : 'Log In'}
                     </button>
                 </form>
+                <div className={loginStyles.divider}>or</div>
+                <a
+                    className={loginStyles.googleButton}
+                    href={`${API_BASE_URL}/api/auth/google`}
+                >
+                    Continue with Google
+                </a>
             </div>
         );
     }

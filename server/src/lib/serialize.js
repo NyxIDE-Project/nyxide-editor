@@ -48,6 +48,11 @@ const serializeProjectSummary = (project, owner) => ({
     ...(project.featured_source ? {
         featuredSource: project.featured_source,
         featuredAt: project.featured_at
+    } : {}),
+    // Only present on rows returned by projectsModel.listNearFeatured().
+    ...(typeof project.like_count === 'number' ? {
+        likeCount: project.like_count,
+        favoriteCount: project.favorite_count
     } : {})
 });
 

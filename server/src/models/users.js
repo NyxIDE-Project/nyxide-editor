@@ -2,12 +2,14 @@ const db = require('../db');
 
 const statements = {
     insert: db.prepare(`
-        INSERT INTO users (username, email, password_hash, display_name)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO users (username, email, password_hash, display_name, google_id)
+        VALUES (?, ?, ?, ?, ?)
     `),
     getById: db.prepare('SELECT * FROM users WHERE id = ?'),
     getByUsername: db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE'),
     getByEmail: db.prepare('SELECT * FROM users WHERE email = ? COLLATE NOCASE'),
+    getByGoogleId: db.prepare('SELECT * FROM users WHERE google_id = ?'),
+    linkGoogleId: db.prepare('UPDATE users SET google_id = ? WHERE id = ?'),
     getByUsernameOrEmail: db.prepare(
         'SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE'
     ),
@@ -56,8 +58,8 @@ const statements = {
     listAllIds: db.prepare('SELECT id FROM users')
 };
 
-const create = ({username, email, passwordHash, displayName}) => {
-    const info = statements.insert.run(username, email, passwordHash, displayName);
+const create = ({username, email, passwordHash, displayName, googleId}) => {
+    const info = statements.insert.run(username, email, passwordHash, displayName, googleId || null);
     return statements.getById.get(info.lastInsertRowid);
 };
 
@@ -65,6 +67,12 @@ const getById = id => statements.getById.get(id);
 const getByUsername = username => statements.getByUsername.get(username);
 const getByEmail = email => statements.getByEmail.get(email);
 const getByUsernameOrEmail = identifier => statements.getByUsernameOrEmail.get(identifier, identifier);
+const getByGoogleId = googleId => statements.getByGoogleId.get(googleId);
+
+const linkGoogleId = (id, googleId) => {
+    statements.linkGoogleId.run(googleId, id);
+    return statements.getById.get(id);
+};
 
 const updateEmail = (id, email) => {
     statements.updateEmail.run(email, id);
@@ -152,6 +160,8 @@ module.exports = {
     getByUsername,
     getByEmail,
     getByUsernameOrEmail,
+    getByGoogleId,
+    linkGoogleId,
     updateEmail,
     updateUsername,
     updateProfile,

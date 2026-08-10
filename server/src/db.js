@@ -21,6 +21,7 @@ db.exec(`
         banned_until INTEGER,
         ban_reason TEXT,
         username_changed_at INTEGER,
+        google_id TEXT,
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -146,11 +147,13 @@ addColumnIfMissing('users', 'ban_reason', 'TEXT');
 addColumnIfMissing('users', 'banner_path', 'TEXT');
 addColumnIfMissing('users', 'email', 'TEXT COLLATE NOCASE');
 addColumnIfMissing('users', 'username_changed_at', 'INTEGER');
+addColumnIfMissing('users', 'google_id', 'TEXT');
 addColumnIfMissing('events', 'updated_at', "TEXT NOT NULL DEFAULT (datetime('now'))");
 
 // Created here (not in the main CREATE TABLE block above) because on an existing database
 // the users.email column above is only added by the migration line just before this, and
 // this index would fail with "no such column" if it ran any earlier than that.
 db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email)');
+db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)');
 
 module.exports = db;
