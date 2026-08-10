@@ -60,6 +60,10 @@
     text-decoration: none;
 }
 
+.settings-section {
+    margin-top: 2rem;
+}
+
 .error {
     color: $error-primary;
     font-size: 0.85rem;

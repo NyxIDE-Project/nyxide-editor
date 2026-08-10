@@ -188,23 +188,25 @@ class SettingsForm extends React.Component {
                     </button>
                 </form>
 
-                <h2 className={styles.heading}>Linked Accounts</h2>
-                {this.state.googleLinkSuccess && (
-                    <div>Your Google account is now linked.</div>
-                )}
-                {this.state.googleLinkError && (
-                    <div className={styles.error}>{this.state.googleLinkError}</div>
-                )}
-                {this.props.user.googleLinked ? (
-                    <div>Google account linked.</div>
-                ) : (
-                    <a
-                        className={styles.linkButton}
-                        href={`${API_BASE_URL}/api/auth/google/link`}
-                    >
-                        Link Google Account
-                    </a>
-                )}
+                <div className={styles.settingsSection}>
+                    <h2 className={styles.heading}>Linked Accounts</h2>
+                    {this.state.googleLinkSuccess && (
+                        <div>Your Google account is now linked.</div>
+                    )}
+                    {this.state.googleLinkError && (
+                        <div className={styles.error}>{this.state.googleLinkError}</div>
+                    )}
+                    {this.props.user.googleLinked ? (
+                        <div>Google account linked.</div>
+                    ) : (
+                        <a
+                            className={styles.linkButton}
+                            href={`${API_BASE_URL}/api/auth/google/link`}
+                        >
+                            Link Google Account
+                        </a>
+                    )}
+                </div>
             </div>
         );
     }
