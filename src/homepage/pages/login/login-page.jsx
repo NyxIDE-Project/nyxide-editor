@@ -14,7 +14,9 @@ const GOOGLE_ERROR_MESSAGES = {
     google_state_mismatch: 'Google login failed (session expired). Please try again.',
     google_denied: 'Google login was cancelled.',
     google_token_failed: 'Google login failed. Please try again.',
-    google_profile_failed: 'Google login failed. Please try again.'
+    google_profile_failed: 'Google login failed. Please try again.',
+    google_email_registered: 'An account with this email already exists. Log in with your ' +
+        'username and password, then link Google from Settings.'
 };
 
 const googleErrorFromUrl = () => {

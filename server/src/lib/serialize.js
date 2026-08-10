@@ -21,6 +21,7 @@ const serializeMe = user => ({
     ...serializeUser(user),
     email: user.email || null,
     usernameChangedAt: user.username_changed_at || null,
+    googleLinked: Boolean(user.google_id),
     isBanned: usersModel.isBanned(user),
     bannedUntil: user.banned_until || null,
     banReason: user.ban_reason || null

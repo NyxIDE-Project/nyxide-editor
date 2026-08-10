@@ -54,6 +54,12 @@
     cursor: default;
 }
 
+.link-button {
+    composes: submit-button;
+    display: inline-block;
+    text-decoration: none;
+}
+
 .error {
     color: $error-primary;
     font-size: 0.85rem;

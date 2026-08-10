@@ -9,7 +9,7 @@ const statements = {
     getByUsername: db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE'),
     getByEmail: db.prepare('SELECT * FROM users WHERE email = ? COLLATE NOCASE'),
     getByGoogleId: db.prepare('SELECT * FROM users WHERE google_id = ?'),
-    linkGoogleId: db.prepare('UPDATE users SET google_id = ? WHERE id = ?'),
+    setGoogleId: db.prepare('UPDATE users SET google_id = ? WHERE id = ?'),
     getByUsernameOrEmail: db.prepare(
         'SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE'
     ),
@@ -69,8 +69,8 @@ const getByEmail = email => statements.getByEmail.get(email);
 const getByUsernameOrEmail = identifier => statements.getByUsernameOrEmail.get(identifier, identifier);
 const getByGoogleId = googleId => statements.getByGoogleId.get(googleId);
 
-const linkGoogleId = (id, googleId) => {
-    statements.linkGoogleId.run(googleId, id);
+const setGoogleId = (id, googleId) => {
+    statements.setGoogleId.run(googleId, id);
     return statements.getById.get(id);
 };
 
@@ -161,7 +161,7 @@ module.exports = {
     getByEmail,
     getByUsernameOrEmail,
     getByGoogleId,
-    linkGoogleId,
+    setGoogleId,
     updateEmail,
     updateUsername,
     updateProfile,

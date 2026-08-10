@@ -4,10 +4,31 @@ import {Redirect} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
 import {putJson, postForm} from '../../lib/api';
-import {MAX_BANNER_BYTES, MAX_AVATAR_BYTES, resolveApiUrl} from '../../../lib/nyxide-constants';
+import {MAX_BANNER_BYTES, MAX_AVATAR_BYTES, API_BASE_URL, resolveApiUrl} from '../../../lib/nyxide-constants';
 import UsernameForm from './username-form.jsx';
 
 import styles from '../page.css';
+
+const GOOGLE_LINK_ERROR_MESSAGES = {
+    google_state_mismatch: 'Linking with Google failed (session expired). Please try again.',
+    google_denied: 'Linking with Google was cancelled.',
+    google_token_failed: 'Linking with Google failed. Please try again.',
+    google_profile_failed: 'Linking with Google failed. Please try again.',
+    google_link_session: 'You were logged out before linking finished. Please log in and try again.',
+    google_already_linked: 'That Google account is already linked to a different NyxIDE account.'
+};
+
+const googleLinkStatusFromUrl = () => {
+    if (typeof window === 'undefined') {
+        return {};
+    }
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('error');
+    return {
+        googleLinkSuccess: params.get('linked') === 'google',
+        googleLinkError: code && GOOGLE_LINK_ERROR_MESSAGES[code] ? GOOGLE_LINK_ERROR_MESSAGES[code] : null
+    };
+};
 
 class SettingsForm extends React.Component {
     constructor (props) {
@@ -21,7 +42,8 @@ class SettingsForm extends React.Component {
             bannerPreviewUrl: resolveApiUrl(props.user.bannerUrl) || null,
             saved: false,
             error: null,
-            isSaving: false
+            isSaving: false,
+            ...googleLinkStatusFromUrl()
         };
         this.handleDisplayNameChange = this.handleDisplayNameChange.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
@@ -165,6 +187,24 @@ class SettingsForm extends React.Component {
                         {this.state.isSaving ? 'Saving…' : 'Save Changes'}
                     </button>
                 </form>
+
+                <h2 className={styles.heading}>Linked Accounts</h2>
+                {this.state.googleLinkSuccess && (
+                    <div>Your Google account is now linked.</div>
+                )}
+                {this.state.googleLinkError && (
+                    <div className={styles.error}>{this.state.googleLinkError}</div>
+                )}
+                {this.props.user.googleLinked ? (
+                    <div>Google account linked.</div>
+                ) : (
+                    <a
+                        className={styles.linkButton}
+                        href={`${API_BASE_URL}/api/auth/google/link`}
+                    >
+                        Link Google Account
+                    </a>
+                )}
             </div>
         );
     }
@@ -177,7 +217,8 @@ SettingsForm.propTypes = {
         displayName: PropTypes.string,
         email: PropTypes.string,
         bannerUrl: PropTypes.string,
-        usernameChangedAt: PropTypes.number
+        usernameChangedAt: PropTypes.number,
+        googleLinked: PropTypes.bool
     }).isRequired,
     updateEmail: PropTypes.func.isRequired,
     updateUsername: PropTypes.func.isRequired

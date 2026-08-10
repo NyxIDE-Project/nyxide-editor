@@ -2,7 +2,7 @@ const express = require('express');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const usersModel = require('../models/users');
-const {ADMIN_ROLES} = require('../middleware/auth');
+const {ADMIN_ROLES, requireAuth} = require('../middleware/auth');
 const {serializeMe} = require('../lib/serialize');
 const {verifyTurnstileToken} = require('../lib/turnstile');
 const {
@@ -33,22 +33,57 @@ const uniqueGoogleUsername = () => {
     return username;
 };
 
-const findOrCreateGoogleUser = async profile => {
+const buildGoogleAuthUrl = state => {
+    const params = new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        response_type: 'code',
+        scope: 'openid email profile',
+        state,
+        prompt: 'select_account'
+    });
+    return `${GOOGLE_AUTH_URL}?${params.toString()}`;
+};
+
+const fetchGoogleProfile = async code => {
+    const tokenRes = await fetch(GOOGLE_TOKEN_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({
+            code,
+            client_id: GOOGLE_CLIENT_ID,
+            client_secret: GOOGLE_CLIENT_SECRET,
+            redirect_uri: GOOGLE_REDIRECT_URI,
+            grant_type: 'authorization_code'
+        })
+    });
+    if (!tokenRes.ok) {
+        return {error: 'google_token_failed'};
+    }
+    const {access_token: accessToken} = await tokenRes.json();
+
+    const profileRes = await fetch(GOOGLE_USERINFO_URL, {
+        headers: {Authorization: `Bearer ${accessToken}`}
+    });
+    if (!profileRes.ok) {
+        return {error: 'google_profile_failed'};
+    }
+    return {profile: await profileRes.json()};
+};
+
+// Logging in with Google never links to or creates an account by email match alone - if the
+// email is already registered to an account with no google_id, that account might not belong
+// to whoever is sitting behind this Google session, so we refuse rather than log them in.
+// Linking is only ever done from the authenticated /google/link flow below, which requires
+// already being logged into the target account first.
+const findOrCreateGoogleLoginUser = async profile => {
     const byGoogleId = usersModel.getByGoogleId(profile.sub);
     if (byGoogleId) {
         return byGoogleId;
     }
-    if (profile.email) {
-        // Someone who already registered with a password, now signing in with Google using
-        // the same email - link the accounts instead of creating a duplicate.
-        const byEmail = usersModel.getByEmail(profile.email);
-        if (byEmail) {
-            return usersModel.linkGoogleId(byEmail.id, profile.sub);
-        }
+    if (profile.email && usersModel.getByEmail(profile.email)) {
+        return null;
     }
-    // No password is ever set for a Google-only account, but password_hash is a required
-    // column - fill it with a hash of a secret nobody has, rather than relaxing the column
-    // constraint just for this one case.
     const passwordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), BCRYPT_COST);
     const username = uniqueGoogleUsername();
     return usersModel.create({
@@ -57,6 +92,17 @@ const findOrCreateGoogleUser = async profile => {
         passwordHash,
         displayName: username,
         googleId: profile.sub
+    });
+};
+
+const logInAs = (req, res, next, user, redirectUrl) => {
+    req.session.regenerate(err => {
+        if (err) return next(err);
+        req.session.userId = user.id;
+        if (ADMIN_ROLES.includes(user.role)) {
+            req.session.adminAuthenticatedAt = Date.now();
+        }
+        res.redirect(redirectUrl);
     });
 };
 
@@ -127,16 +173,20 @@ router.get('/google', (req, res) => {
         return res.status(503).send('Google login is not configured on this server.');
     }
     const state = crypto.randomBytes(16).toString('hex');
-    req.session.googleOAuthState = state;
-    const params = new URLSearchParams({
-        client_id: GOOGLE_CLIENT_ID,
-        redirect_uri: GOOGLE_REDIRECT_URI,
-        response_type: 'code',
-        scope: 'openid email profile',
-        state,
-        prompt: 'select_account'
-    });
-    res.redirect(`${GOOGLE_AUTH_URL}?${params.toString()}`);
+    req.session.googleOAuth = {state, intent: 'login'};
+    res.redirect(buildGoogleAuthUrl(state));
+});
+
+// Deliberately requireAuth: linking must be initiated by someone already logged into the
+// target account via username/password (or a prior Google session) - that's what makes it
+// safe for the callback to attach this Google identity to req.user's account below.
+router.get('/google/link', requireAuth, (req, res) => {
+    if (!GOOGLE_CLIENT_ID) {
+        return res.status(503).send('Google login is not configured on this server.');
+    }
+    const state = crypto.randomBytes(16).toString('hex');
+    req.session.googleOAuth = {state, intent: 'link', userId: req.user.id};
+    res.redirect(buildGoogleAuthUrl(state));
 });
 
 router.get('/google/callback', async (req, res, next) => {
@@ -145,48 +195,42 @@ router.get('/google/callback', async (req, res, next) => {
             return res.redirect(`${FRONTEND_URL}/login?error=google_not_configured`);
         }
         const {code, state} = req.query;
-        const expectedState = req.session.googleOAuthState;
-        delete req.session.googleOAuthState;
-        if (!state || state !== expectedState) {
-            return res.redirect(`${FRONTEND_URL}/login?error=google_state_mismatch`);
+        const pending = req.session.googleOAuth;
+        delete req.session.googleOAuth;
+        const isLink = Boolean(pending) && pending.intent === 'link';
+        const failureUrl = isLink ? `${FRONTEND_URL}/settings` : `${FRONTEND_URL}/login`;
+
+        if (!pending || !state || state !== pending.state) {
+            return res.redirect(`${failureUrl}?error=google_state_mismatch`);
         }
         if (!code) {
-            return res.redirect(`${FRONTEND_URL}/login?error=google_denied`);
+            return res.redirect(`${failureUrl}?error=google_denied`);
         }
 
-        const tokenRes = await fetch(GOOGLE_TOKEN_URL, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: new URLSearchParams({
-                code,
-                client_id: GOOGLE_CLIENT_ID,
-                client_secret: GOOGLE_CLIENT_SECRET,
-                redirect_uri: GOOGLE_REDIRECT_URI,
-                grant_type: 'authorization_code'
-            })
-        });
-        if (!tokenRes.ok) {
-            return res.redirect(`${FRONTEND_URL}/login?error=google_token_failed`);
+        const {profile, error} = await fetchGoogleProfile(code);
+        if (error) {
+            return res.redirect(`${failureUrl}?error=${error}`);
         }
-        const {access_token: accessToken} = await tokenRes.json();
 
-        const profileRes = await fetch(GOOGLE_USERINFO_URL, {
-            headers: {Authorization: `Bearer ${accessToken}`}
-        });
-        if (!profileRes.ok) {
-            return res.redirect(`${FRONTEND_URL}/login?error=google_profile_failed`);
-        }
-        const profile = await profileRes.json();
-        const user = await findOrCreateGoogleUser(profile);
-
-        req.session.regenerate(err => {
-            if (err) return next(err);
-            req.session.userId = user.id;
-            if (ADMIN_ROLES.includes(user.role)) {
-                req.session.adminAuthenticatedAt = Date.now();
+        if (isLink) {
+            // req.user reflects the *current* session, which must still be the same account
+            // that started the link flow - guards against the session changing mid-flow.
+            if (!req.user || req.user.id !== pending.userId) {
+                return res.redirect(`${FRONTEND_URL}/settings?error=google_link_session`);
             }
-            res.redirect(FRONTEND_URL);
-        });
+            const takenBy = usersModel.getByGoogleId(profile.sub);
+            if (takenBy && takenBy.id !== req.user.id) {
+                return res.redirect(`${FRONTEND_URL}/settings?error=google_already_linked`);
+            }
+            usersModel.setGoogleId(req.user.id, profile.sub);
+            return res.redirect(`${FRONTEND_URL}/settings?linked=google`);
+        }
+
+        const user = await findOrCreateGoogleLoginUser(profile);
+        if (!user) {
+            return res.redirect(`${FRONTEND_URL}/login?error=google_email_registered`);
+        }
+        logInAs(req, res, next, user, FRONTEND_URL);
     } catch (err) {
         next(err);
     }
