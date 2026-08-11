@@ -110,6 +110,8 @@ import SeeInsideButton from './tw-see-inside.jsx';
 import {notScratchDesktop} from '../../lib/isScratchDesktop.js';
 import {APP_NAME} from '../../lib/brand.js';
 
+const isDesktopEmbed = typeof URLSearchParams !== 'undefined' && new URLSearchParams(location.search).has('desktop');
+
 const ariaMessages = defineMessages({
     tutorials: {
         id: 'gui.menuBar.tutorialsLibrary',
@@ -496,14 +498,23 @@ class MenuBar extends React.Component {
             >
                 <div className={styles.mainMenu}>
                     <div className={styles.fileGroup}>
-                        <a href="/">
+                        {isDesktopEmbed ? (
                             <img
                                 className={classNames(styles.scratchLogo, styles.clickable)}
                                 src="/logo.png"
                                 alt={APP_NAME}
                                 draggable={false}
                             />
-                        </a>
+                        ) : (
+                            <a href="/">
+                                <img
+                                    className={classNames(styles.scratchLogo, styles.clickable)}
+                                    src="/logo.png"
+                                    alt={APP_NAME}
+                                    draggable={false}
+                                />
+                            </a>
+                        )}
                         {this.props.errors.length > 0 && <div>
                             <MenuLabel
                                 open={this.props.errorsMenuOpen}
