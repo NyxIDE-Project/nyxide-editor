@@ -1037,7 +1037,7 @@ class MenuBar extends React.Component {
                 </div>
 
                 <div className={styles.accountInfoGroup}>
-                    <NyxSaveButton />
+                    {!isDesktopEmbed && <NyxSaveButton />}
                     <TWSaveStatus
                         showSaveFilePicker={this.props.showSaveFilePicker}
                     />

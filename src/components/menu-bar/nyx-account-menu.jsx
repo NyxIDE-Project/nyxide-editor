@@ -12,6 +12,8 @@ import dropdownCaret from './dropdown-caret.svg';
 import menuBarStyles from './menu-bar.css';
 import styles from './nyx-account-menu.css';
 
+const isDesktopEmbed = typeof URLSearchParams !== 'undefined' && new URLSearchParams(location.search).has('desktop');
+
 // nyxide: shows who's logged in on the editor/player pages (right side of the bar),
 // reusing the app's actual MenuLabel/MenuBarMenu/MenuItem dropdown system - the same one
 // Settings/File/Edit already use - rather than a bespoke dropdown implementation.
@@ -50,6 +52,9 @@ class NyxAccountMenu extends React.Component {
             return null;
         }
         if (!this.state.user) {
+            if (isDesktopEmbed) {
+                return null;
+            }
             return (
                 <div className={styles.wrapper}>
                     <a
