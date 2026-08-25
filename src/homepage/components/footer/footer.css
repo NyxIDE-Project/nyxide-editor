@@ -59,3 +59,12 @@
     opacity: 0.5;
     text-align: center;
 }
+
+.archive-link {
+    color: $text-primary;
+    text-decoration: underline;
+}
+
+.archive-link:hover {
+    color: $extensions-primary;
+}

@@ -20,6 +20,7 @@ const adminRoutes = require('./routes/admin');
 const eventsRoutes = require('./routes/events');
 const githubRoutes = require('./routes/github');
 const bannerRoutes = require('./routes/banner');
+const archiveRoutes = require('./routes/archive');
 
 const app = express();
 const sessionStore = new SqliteSessionStore(db);
@@ -78,6 +79,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/github', githubRoutes);
 app.use('/api/banner', bannerRoutes);
+app.use('/api/archive', archiveRoutes);
 
 if (IS_PRODUCTION) {
     const buildDir = path.resolve(__dirname, '..', '..', 'build');

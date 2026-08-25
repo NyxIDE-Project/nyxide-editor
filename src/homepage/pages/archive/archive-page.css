@@ -1,0 +1,82 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+.page {
+    max-width: 62rem;
+    margin: 0 auto;
+}
+
+.intro {
+    color: $text-primary;
+    opacity: 0.8;
+    max-width: 42rem;
+}
+
+.warning {
+    color: $text-primary;
+    background: rgba(218, 165, 32, 0.15);
+    border: 1px solid rgba(218, 165, 32, 0.5);
+    border-radius: $form-radius;
+    padding: 0.85rem 1.1rem;
+    margin: 1rem 0 1.75rem;
+}
+
+.loading-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    color: $text-primary;
+    opacity: 0.8;
+    padding: 2rem 0;
+}
+
+.count {
+    color: $text-primary;
+    opacity: 0.7;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-radius: $form-radius;
+    background: $ui-secondary;
+}
+
+.title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    overflow-wrap: break-word;
+}
+
+.meta {
+    font-size: 0.8rem;
+    color: $text-primary;
+    opacity: 0.7;
+}
+
+.download-button {
+    align-self: flex-start;
+    margin-top: 0.75rem;
+    background: $extensions-primary;
+    color: $ui-white;
+    font-weight: bold;
+    padding: 0.45rem 1.1rem;
+    border-radius: $form-radius;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.download-button:hover {
+    text-decoration: none;
+    opacity: 0.9;
+}

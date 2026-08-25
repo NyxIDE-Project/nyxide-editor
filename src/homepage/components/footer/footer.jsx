@@ -70,6 +70,13 @@ const Footer = () => (
             </div>
             <div className={styles.bottomRow}>
                 {`${APP_NAME} is not affiliated with Turbowarp, the Scratch Team or MIT.`}
+                {' · '}
+                <Link
+                    className={styles.archiveLink}
+                    to="/archived-projects"
+                >
+                    {'ArkIDE Archived Projects'}
+                </Link>
             </div>
         </div>
     </footer>

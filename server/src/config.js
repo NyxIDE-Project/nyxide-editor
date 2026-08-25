@@ -57,5 +57,10 @@ module.exports = {
     GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI || 'https://nyxideapi.nyxdev.app/api/auth/google/callback',
     // Where to send the browser back to once a Google login finishes - the frontend's own
     // origin, since it's hosted separately from this API.
-    FRONTEND_URL: process.env.FRONTEND_URL || 'https://ide.nyxdev.app'
+    FRONTEND_URL: process.env.FRONTEND_URL || 'https://ide.nyxdev.app',
+    // Read-only mirror of ArkIDE (a discontinued earlier project) - its MongoDB dump and
+    // MinIO project/asset files, committed straight into this GitHub repo since the original
+    // site is gone. Powers the "Archived Projects" recovery page.
+    ARCHIVE_REPO: process.env.ARCHIVE_REPO || 'arc360alt/arkide-backup',
+    ARCHIVE_CACHE_MS: Number(process.env.ARCHIVE_CACHE_MS) || (60 * 60 * 1000)
 };

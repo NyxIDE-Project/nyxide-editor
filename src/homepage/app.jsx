@@ -20,6 +20,7 @@ import TermsPage from './pages/legal/terms-page.jsx';
 import PrivacyPage from './pages/legal/privacy-page.jsx';
 import GuidelinesPage from './pages/legal/guidelines-page.jsx';
 import DesktopPage from './pages/desktop/desktop-page.jsx';
+import ArchivePage from './pages/archive/archive-page.jsx';
 import NotFoundPage from './pages/not-found/not-found-page.jsx';
 
 import styles from './app.css';
@@ -107,6 +108,11 @@ const App = () => {
                         exact
                         path="/desktop"
                         component={DesktopPage}
+                    />
+                    <Route
+                        exact
+                        path="/archived-projects"
+                        component={ArchivePage}
                     />
                     <Route component={NotFoundPage} />
                 </Switch>
