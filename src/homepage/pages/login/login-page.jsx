@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
 import TurnstileWidget from '../../components/turnstile-widget/turnstile-widget.jsx';
@@ -101,6 +101,12 @@ class LoginForm extends React.Component {
                             onChange={this.handlePasswordChange}
                         />
                     </label>
+                    <Link
+                        className={loginStyles.forgotPasswordLink}
+                        to="/forgot-password"
+                    >
+                        Forgot password?
+                    </Link>
                     <TurnstileWidget
                         ref={this.turnstileRef}
                         onVerify={this.handleTurnstileVerify}

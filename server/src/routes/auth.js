@@ -2,9 +2,14 @@ const express = require('express');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const usersModel = require('../models/users');
+const projectsModel = require('../models/projects');
+const emailTokensModel = require('../models/email-tokens');
 const {ADMIN_ROLES, requireAuth} = require('../middleware/auth');
 const {serializeMe} = require('../lib/serialize');
 const {verifyTurnstileToken} = require('../lib/turnstile');
+const {sendAccountEmail} = require('../lib/account-emails');
+const {removeFile} = require('../middleware/upload');
+const sessionStore = require('../session-store');
 const {
     GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, FRONTEND_URL
 } = require('../config');
@@ -12,10 +17,12 @@ const {
 const router = express.Router();
 
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
-// Deliberately simple/permissive - just enough to reject obviously-malformed input, since
-// real deliverability is out of scope (no verification email is sent).
+// Deliberately simple/permissive - just enough to reject obviously-malformed input.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BCRYPT_COST = 12;
+
+// Best-effort: a broken mail provider shouldn't break the underlying account action.
+const sendAccountEmailSafely = (user, type) => sendAccountEmail(user, type).catch(() => {});
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -130,6 +137,7 @@ router.post('/register', async (req, res, next) => {
         }
         const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
         const user = usersModel.create({username, email, passwordHash, displayName: username});
+        sendAccountEmailSafely(user, 'verify_email');
         req.session.regenerate(err => {
             if (err) return next(err);
             req.session.userId = user.id;
@@ -234,6 +242,97 @@ router.get('/google/callback', async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+});
+
+// Covers the two email actions a logged-in user can trigger themselves - resending their
+// verification email, or starting the account-deletion confirmation flow.
+router.post('/send-email-action', requireAuth, async (req, res) => {
+    const {type} = req.body;
+    if (!['verify_email', 'delete_account'].includes(type)) {
+        return res.status(400).json({error: 'Invalid email action'});
+    }
+    if (type === 'verify_email' && req.user.email_verified) {
+        return res.status(400).json({error: 'Your email is already verified'});
+    }
+    if (!req.user.email) {
+        return res.status(400).json({error: 'Add an email address in Settings first'});
+    }
+    try {
+        await sendAccountEmail(req.user, type);
+        res.status(204).end();
+    } catch (err) {
+        if (err instanceof emailTokensModel.EmailCooldownError) {
+            return res.status(429).json({error: err.message, remainingMs: err.remainingMs});
+        }
+        res.status(502).json({error: `Could not send that email: ${err.message}`});
+    }
+});
+
+router.post('/forgot-password', async (req, res) => {
+    const {email, turnstileToken} = req.body;
+    const verified = await verifyTurnstileToken(turnstileToken, req.ip);
+    if (!verified) {
+        return res.status(400).json({error: 'Please complete the verification challenge'});
+    }
+    if (typeof email === 'string') {
+        const user = usersModel.getByEmail(email);
+        // Same response whether or not the email matched, so this can't be used to test
+        // which addresses have an account.
+        if (user) {
+            await sendAccountEmailSafely(user, 'reset_password');
+        }
+    }
+    res.json({message: 'If that email is registered, a reset link has been sent.'});
+});
+
+router.post('/verify-email', (req, res) => {
+    const row = emailTokensModel.consume(req.body.token, 'verify_email');
+    if (!row) {
+        return res.status(400).json({error: 'This verification link is invalid or has expired.'});
+    }
+    usersModel.setEmailVerified(row.user_id, true);
+    res.status(204).end();
+});
+
+router.post('/reset-password', async (req, res) => {
+    const {token, password} = req.body;
+    if (typeof password !== 'string' || password.length < 8) {
+        return res.status(400).json({error: 'Password must be at least 8 characters'});
+    }
+    const row = emailTokensModel.consume(token, 'reset_password');
+    if (!row) {
+        return res.status(400).json({error: 'This reset link is invalid or has expired.'});
+    }
+    const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
+    usersModel.updatePassword(row.user_id, passwordHash);
+    sessionStore.destroyAllForUser(row.user_id);
+    res.status(204).end();
+});
+
+router.post('/confirm-account-deletion', async (req, res) => {
+    const {token, password} = req.body;
+    const row = emailTokensModel.consume(token, 'delete_account');
+    if (!row) {
+        return res.status(400).json({error: 'This link is invalid or has expired.'});
+    }
+    const user = usersModel.getById(row.user_id);
+    const valid = user && typeof password === 'string' && await bcrypt.compare(password, user.password_hash);
+    if (!valid) {
+        return res.status(401).json({error: 'Incorrect password'});
+    }
+    const {items: projects} = projectsModel.listByOwner(user.id, 1, 100000);
+    projects.forEach(project => {
+        removeFile(project.file_path);
+        removeFile(project.thumbnail_path);
+    });
+    removeFile(user.avatar_path);
+    removeFile(user.banner_path);
+    usersModel.deleteUser(user.id);
+    sessionStore.destroyAllForUser(user.id);
+    if (req.session.userId === user.id) {
+        req.session.destroy(() => {});
+    }
+    res.status(204).end();
 });
 
 router.post('/logout', (req, res, next) => {

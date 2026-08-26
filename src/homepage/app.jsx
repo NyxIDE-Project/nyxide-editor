@@ -21,6 +21,10 @@ import PrivacyPage from './pages/legal/privacy-page.jsx';
 import GuidelinesPage from './pages/legal/guidelines-page.jsx';
 import DesktopPage from './pages/desktop/desktop-page.jsx';
 import ArchivePage from './pages/archive/archive-page.jsx';
+import ForgotPasswordPage from './pages/forgot-password/forgot-password-page.jsx';
+import ResetPasswordPage from './pages/reset-password/reset-password-page.jsx';
+import VerifyEmailPage from './pages/verify-email/verify-email-page.jsx';
+import DeleteAccountPage from './pages/delete-account/delete-account-page.jsx';
 import NotFoundPage from './pages/not-found/not-found-page.jsx';
 
 import styles from './app.css';
@@ -113,6 +117,26 @@ const App = () => {
                         exact
                         path="/archived-projects"
                         component={ArchivePage}
+                    />
+                    <Route
+                        exact
+                        path="/forgot-password"
+                        component={ForgotPasswordPage}
+                    />
+                    <Route
+                        exact
+                        path="/reset-password"
+                        component={ResetPasswordPage}
+                    />
+                    <Route
+                        exact
+                        path="/verify-email"
+                        component={VerifyEmailPage}
+                    />
+                    <Route
+                        exact
+                        path="/delete-account"
+                        component={DeleteAccountPage}
                     />
                     <Route component={NotFoundPage} />
                 </Switch>

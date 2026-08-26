@@ -3,7 +3,7 @@ import React from 'react';
 import {Redirect} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
-import {putJson, postForm} from '../../lib/api';
+import {putJson, postJson, postForm} from '../../lib/api';
 import {MAX_BANNER_BYTES, MAX_AVATAR_BYTES, API_BASE_URL, resolveApiUrl} from '../../../lib/nyxide-constants';
 import UsernameForm from './username-form.jsx';
 
@@ -43,6 +43,10 @@ class SettingsForm extends React.Component {
             saved: false,
             error: null,
             isSaving: false,
+            resendStatus: 'idle',
+            resendError: null,
+            deleteStatus: 'idle',
+            deleteError: null,
             ...googleLinkStatusFromUrl()
         };
         this.handleDisplayNameChange = this.handleDisplayNameChange.bind(this);
@@ -51,6 +55,8 @@ class SettingsForm extends React.Component {
         this.handleAvatarChange = this.handleAvatarChange.bind(this);
         this.handleBannerChange = this.handleBannerChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleResendVerification = this.handleResendVerification.bind(this);
+        this.handleDeleteAccount = this.handleDeleteAccount.bind(this);
     }
     handleDisplayNameChange (e) {
         this.setState({displayName: e.target.value, saved: false});
@@ -108,6 +114,31 @@ class SettingsForm extends React.Component {
             this.setState({isSaving: false, error: err.message});
         }
     }
+    async handleResendVerification () {
+        this.setState({resendStatus: 'sending', resendError: null});
+        try {
+            await postJson('/api/auth/send-email-action', {type: 'verify_email'});
+            this.setState({resendStatus: 'sent'});
+        } catch (err) {
+            this.setState({resendStatus: 'error', resendError: err.message});
+        }
+    }
+    async handleDeleteAccount () {
+        // eslint-disable-next-line no-alert
+        if (!window.confirm(
+            'Are you sure you want to delete your account? This will permanently delete your ' +
+            'account and every project on it. This cannot be undone.'
+        )) {
+            return;
+        }
+        this.setState({deleteStatus: 'sending', deleteError: null});
+        try {
+            await postJson('/api/auth/send-email-action', {type: 'delete_account'});
+            this.setState({deleteStatus: 'sent'});
+        } catch (err) {
+            this.setState({deleteStatus: 'error', deleteError: err.message});
+        }
+    }
     render () {
         return (
             <div>
@@ -142,6 +173,26 @@ class SettingsForm extends React.Component {
                             onChange={this.handleEmailChange}
                         />
                     </label>
+                    {this.props.user.email && !this.props.user.emailVerified && (
+                        <div>
+                            Your email is not verified.
+                            {' '}
+                            {this.state.resendStatus === 'sent' ? (
+                                'Verification email sent - check your inbox.'
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={this.handleResendVerification}
+                                    disabled={this.state.resendStatus === 'sending'}
+                                >
+                                    {this.state.resendStatus === 'sending' ? 'Sending…' : 'Resend verification email'}
+                                </button>
+                            )}
+                            {this.state.resendStatus === 'error' && (
+                                <div className={styles.error}>{this.state.resendError}</div>
+                            )}
+                        </div>
+                    )}
                     <label className={styles.fieldLabel}>
                         Bio
                         <textarea
@@ -207,6 +258,25 @@ class SettingsForm extends React.Component {
                         </a>
                     )}
                 </div>
+
+                <div className={styles.settingsSection}>
+                    <h2 className={styles.heading}>Danger Zone</h2>
+                    {this.state.deleteStatus === 'sent' ? (
+                        <div>Check your email for a link to confirm deleting your account.</div>
+                    ) : (
+                        <button
+                            className={styles.dangerButton}
+                            type="button"
+                            onClick={this.handleDeleteAccount}
+                            disabled={this.state.deleteStatus === 'sending'}
+                        >
+                            {this.state.deleteStatus === 'sending' ? 'Sending…' : 'Delete Account'}
+                        </button>
+                    )}
+                    {this.state.deleteStatus === 'error' && (
+                        <div className={styles.error}>{this.state.deleteError}</div>
+                    )}
+                </div>
             </div>
         );
     }
@@ -218,6 +288,7 @@ SettingsForm.propTypes = {
         bio: PropTypes.string,
         displayName: PropTypes.string,
         email: PropTypes.string,
+        emailVerified: PropTypes.bool,
         bannerUrl: PropTypes.string,
         usernameChangedAt: PropTypes.number,
         googleLinked: PropTypes.bool

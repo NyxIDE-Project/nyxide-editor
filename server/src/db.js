@@ -22,6 +22,7 @@ db.exec(`
         ban_reason TEXT,
         username_changed_at INTEGER,
         google_id TEXT,
+        email_verified INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -114,6 +115,16 @@ db.exec(`
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
+    CREATE TABLE IF NOT EXISTS email_tokens (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        type TEXT NOT NULL,
+        token_hash TEXT NOT NULL UNIQUE,
+        expires_at INTEGER NOT NULL,
+        used_at INTEGER,
+        created_at INTEGER NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS site_banner (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         enabled INTEGER NOT NULL DEFAULT 0,
@@ -129,6 +140,7 @@ db.exec(`
     CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
     CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, read_at);
     CREATE INDEX IF NOT EXISTS idx_project_tags_tag ON project_tags(tag);
+    CREATE INDEX IF NOT EXISTS idx_email_tokens_user ON email_tokens(user_id, created_at);
 `);
 
 // Migrations for databases created before a column existed (CREATE TABLE IF NOT EXISTS
@@ -148,6 +160,7 @@ addColumnIfMissing('users', 'banner_path', 'TEXT');
 addColumnIfMissing('users', 'email', 'TEXT COLLATE NOCASE');
 addColumnIfMissing('users', 'username_changed_at', 'INTEGER');
 addColumnIfMissing('users', 'google_id', 'TEXT');
+addColumnIfMissing('users', 'email_verified', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('events', 'updated_at', "TEXT NOT NULL DEFAULT (datetime('now'))");
 
 // Created here (not in the main CREATE TABLE block above) because on an existing database

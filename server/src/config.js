@@ -62,5 +62,8 @@ module.exports = {
     // MinIO project/asset files, committed straight into this GitHub repo since the original
     // site is gone. Powers the "Archived Projects" recovery page.
     ARCHIVE_REPO: process.env.ARCHIVE_REPO || 'arc360alt/arkide-backup',
-    ARCHIVE_CACHE_MS: Number(process.env.ARCHIVE_CACHE_MS) || (60 * 60 * 1000)
+    ARCHIVE_CACHE_MS: Number(process.env.ARCHIVE_CACHE_MS) || (60 * 60 * 1000),
+    RESEND_API_KEY: process.env.RESEND_API_KEY || null,
+    EMAIL_FROM: process.env.EMAIL_FROM || 'NyxIDE <noreply@nyxdev.app>',
+    EMAIL_COOLDOWN_MS: Number(process.env.EMAIL_COOLDOWN_MS) || (30 * 60 * 1000)
 };

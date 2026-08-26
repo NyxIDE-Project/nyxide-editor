@@ -10,10 +10,12 @@ const statements = {
     getByEmail: db.prepare('SELECT * FROM users WHERE email = ? COLLATE NOCASE'),
     getByGoogleId: db.prepare('SELECT * FROM users WHERE google_id = ?'),
     setGoogleId: db.prepare('UPDATE users SET google_id = ? WHERE id = ?'),
+    setEmailVerified: db.prepare('UPDATE users SET email_verified = ? WHERE id = ?'),
+    updatePassword: db.prepare('UPDATE users SET password_hash = ? WHERE id = ?'),
     getByUsernameOrEmail: db.prepare(
         'SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE'
     ),
-    updateEmail: db.prepare('UPDATE users SET email = ? WHERE id = ?'),
+    updateEmail: db.prepare('UPDATE users SET email = ?, email_verified = 0 WHERE id = ?'),
     updateUsername: db.prepare('UPDATE users SET username = ?, username_changed_at = ? WHERE id = ?'),
     updateProfile: db.prepare(`
         UPDATE users SET display_name = ?, bio = ? WHERE id = ?
@@ -71,6 +73,16 @@ const getByGoogleId = googleId => statements.getByGoogleId.get(googleId);
 
 const setGoogleId = (id, googleId) => {
     statements.setGoogleId.run(googleId, id);
+    return statements.getById.get(id);
+};
+
+const setEmailVerified = (id, verified) => {
+    statements.setEmailVerified.run(verified ? 1 : 0, id);
+    return statements.getById.get(id);
+};
+
+const updatePassword = (id, passwordHash) => {
+    statements.updatePassword.run(passwordHash, id);
     return statements.getById.get(id);
 };
 
@@ -162,6 +174,8 @@ module.exports = {
     getByUsernameOrEmail,
     getByGoogleId,
     setGoogleId,
+    setEmailVerified,
+    updatePassword,
     updateEmail,
     updateUsername,
     updateProfile,

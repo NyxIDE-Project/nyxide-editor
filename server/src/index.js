@@ -2,8 +2,7 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const SqliteSessionStore = require('./lib/sqlite-session-store');
-const db = require('./db');
+const sessionStore = require('./session-store');
 const {
     PORT, SESSION_SECRET, IS_PRODUCTION, ADMIN_USERNAMES, OWNER_USERNAME, TURNSTILE_SITE_KEY,
     CORS_ORIGINS
@@ -23,7 +22,6 @@ const bannerRoutes = require('./routes/banner');
 const archiveRoutes = require('./routes/archive');
 
 const app = express();
-const sessionStore = new SqliteSessionStore(db);
 setInterval(() => sessionStore.pruneExpired(), 15 * 60 * 1000).unref();
 
 // Bootstrap: promote any configured usernames to admin on every startup, so there's a way

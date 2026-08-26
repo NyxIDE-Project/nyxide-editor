@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState, useContext, useCallback} from 'react';
 import {Redirect} from 'react-router-dom';
 
 import {AuthContext} from '../../contexts/auth-context.jsx';
@@ -149,12 +149,28 @@ RegisterForm.propTypes = {
     register: PropTypes.func.isRequired
 };
 
-const RegisterPage = () => (
-    <AuthContext.Consumer>
-        {({user, register}) => (
-            user ? <Redirect to="/" /> : <RegisterForm register={register} />
-        )}
-    </AuthContext.Consumer>
+const CheckEmailNotice = () => (
+    <div>
+        <h1 className={styles.heading}>Check your email</h1>
+        <p>We sent a verification link to your email address. Click it to verify your account.</p>
+    </div>
 );
+
+const RegisterPage = () => {
+    const {user, register} = useContext(AuthContext);
+    const [justRegistered, setJustRegistered] = useState(false);
+    const registerAndNotify = useCallback(async (...args) => {
+        const registeredUser = await register(...args);
+        setJustRegistered(true);
+        return registeredUser;
+    }, [register]);
+    if (justRegistered) {
+        return <CheckEmailNotice />;
+    }
+    if (user) {
+        return <Redirect to="/" />;
+    }
+    return <RegisterForm register={registerAndNotify} />;
+};
 
 export default RegisterPage;

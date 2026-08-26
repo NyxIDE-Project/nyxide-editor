@@ -51,6 +51,20 @@ class SqliteSessionStore extends Store {
     pruneExpired () {
         this.deleteExpiredStmt.run(Date.now());
     }
+    // Full scan is fine here - this only runs on password reset, and the sessions table is
+    // small (pruned every 15 minutes) and has no user_id column to index on directly.
+    destroyAllForUser (userId) {
+        const rows = this.db.prepare('SELECT sid, sess FROM sessions').all();
+        rows.forEach(row => {
+            try {
+                if (JSON.parse(row.sess).userId === userId) {
+                    this.deleteStmt.run(row.sid);
+                }
+            } catch (err) {
+                // Corrupt row - leave it for pruneExpired to clean up eventually.
+            }
+        });
+    }
 }
 
 module.exports = SqliteSessionStore;
