@@ -26,6 +26,16 @@ const blockIfBanned = (req, res, next) => {
     next();
 };
 
+// Blocks project/profile writes for unverified accounts. Deliberately not applied to
+// PUT /users/me/email (needs to stay reachable so an unverified user can fix/set their email
+// and get a new link) or POST /auth/send-email-action (how they verify in the first place).
+const requireVerifiedEmail = (req, res, next) => {
+    if (req.user && !req.user.email_verified) {
+        return res.status(403).json({error: 'Verify your email before doing that - see Settings.'});
+    }
+    next();
+};
+
 // "owner" is functionally identical to "admin" (same permissions), just a distinct label
 // for the bootstrapped account - see ADMIN_ROLES.
 const ADMIN_ROLES = ['admin', 'owner'];
@@ -68,6 +78,7 @@ module.exports = {
     attachUser,
     requireAuth,
     blockIfBanned,
+    requireVerifiedEmail,
     requireAdmin,
     ADMIN_ROLES,
     loadProject,

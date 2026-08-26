@@ -8,6 +8,7 @@ import {MAX_BANNER_BYTES, MAX_AVATAR_BYTES, API_BASE_URL, resolveApiUrl} from '.
 import UsernameForm from './username-form.jsx';
 
 import styles from '../page.css';
+import settingsStyles from './settings-page.css';
 
 const GOOGLE_LINK_ERROR_MESSAGES = {
     google_state_mismatch: 'Linking with Google failed (session expired). Please try again.',
@@ -166,32 +167,37 @@ class SettingsForm extends React.Component {
                     </label>
                     <label className={styles.fieldLabel}>
                         Email
-                        <input
-                            className={styles.textInput}
-                            type="email"
-                            value={this.state.email}
-                            onChange={this.handleEmailChange}
-                        />
-                    </label>
-                    {this.props.user.email && !this.props.user.emailVerified && (
-                        <div>
-                            Your email is not verified.
-                            {' '}
-                            {this.state.resendStatus === 'sent' ? (
-                                'Verification email sent - check your inbox.'
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={this.handleResendVerification}
-                                    disabled={this.state.resendStatus === 'sending'}
-                                >
-                                    {this.state.resendStatus === 'sending' ? 'Sending…' : 'Resend verification email'}
-                                </button>
-                            )}
-                            {this.state.resendStatus === 'error' && (
-                                <div className={styles.error}>{this.state.resendError}</div>
+                        <div className={settingsStyles.emailRow}>
+                            <input
+                                className={styles.textInput}
+                                type="email"
+                                value={this.state.email}
+                                onChange={this.handleEmailChange}
+                            />
+                            {this.props.user.email && !this.props.user.emailVerified && (
+                                this.state.resendStatus === 'sent' ? (
+                                    <span className={settingsStyles.verifiedNote}>Sent</span>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className={settingsStyles.verifyButton}
+                                        onClick={this.handleResendVerification}
+                                        disabled={this.state.resendStatus === 'sending'}
+                                    >
+                                        {this.state.resendStatus === 'sending' ? '…' : 'Verify'}
+                                    </button>
+                                )
                             )}
                         </div>
+                    </label>
+                    {this.props.user.email && !this.props.user.emailVerified && this.state.resendStatus !== 'sent' && (
+                        <div className={settingsStyles.verifiedNote}>
+                            {'Your email is not verified - unverified accounts can\'t upload or edit ' +
+                                'projects or profile info.'}
+                        </div>
+                    )}
+                    {this.state.resendStatus === 'error' && (
+                        <div className={styles.error}>{this.state.resendError}</div>
                     )}
                     <label className={styles.fieldLabel}>
                         Bio

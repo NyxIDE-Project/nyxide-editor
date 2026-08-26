@@ -2,7 +2,9 @@ const express = require('express');
 const path = require('path');
 const usersModel = require('../models/users');
 const projectsModel = require('../models/projects');
-const {requireAuth, blockIfBanned, loadProject, requireProjectOwnership} = require('../middleware/auth');
+const {
+    requireAuth, blockIfBanned, requireVerifiedEmail, loadProject, requireProjectOwnership
+} = require('../middleware/auth');
 const {projectFields, thumbnailField, removeFile} = require('../middleware/upload');
 const {projectWriteLimiter} = require('../middleware/rate-limit');
 const {serializeProject, serializeProjectSummary} = require('../lib/serialize');
@@ -133,7 +135,7 @@ router.get('/:id/thumbnail', loadProject, (req, res) => {
     res.sendFile(path.resolve(req.project.thumbnail_path));
 });
 
-router.post('/', requireAuth, blockIfBanned, projectWriteLimiter, projectFields, (req, res) => {
+router.post('/', requireAuth, blockIfBanned, requireVerifiedEmail, projectWriteLimiter, projectFields, (req, res) => {
     const file = req.files && req.files.file && req.files.file[0];
     const thumbnail = req.files && req.files.thumbnail && req.files.thumbnail[0];
     if (!file) {
@@ -156,7 +158,8 @@ router.post('/', requireAuth, blockIfBanned, projectWriteLimiter, projectFields,
     res.status(201).json(serializeProject(project, req.user, req.user.id));
 });
 
-router.put('/:id', requireAuth, blockIfBanned, projectWriteLimiter, loadProject, requireProjectOwnership,
+router.put('/:id',
+    requireAuth, blockIfBanned, requireVerifiedEmail, projectWriteLimiter, loadProject, requireProjectOwnership,
     (req, res) => {
         const title = typeof req.body.title === 'string' && req.body.title.trim() ?
             req.body.title.trim().slice(0, 100) : req.project.title;
@@ -172,7 +175,8 @@ router.put('/:id', requireAuth, blockIfBanned, projectWriteLimiter, loadProject,
         res.json(serializeProject(updated, req.user, req.user.id));
     });
 
-router.put('/:id/file', requireAuth, blockIfBanned, projectWriteLimiter, loadProject, requireProjectOwnership,
+router.put('/:id/file',
+    requireAuth, blockIfBanned, requireVerifiedEmail, projectWriteLimiter, loadProject, requireProjectOwnership,
     projectFields, (req, res) => {
         const file = req.files && req.files.file && req.files.file[0];
         const thumbnail = req.files && req.files.thumbnail && req.files.thumbnail[0];
@@ -194,43 +198,47 @@ router.put('/:id/file', requireAuth, blockIfBanned, projectWriteLimiter, loadPro
         res.json(serializeProject(updated, req.user, req.user.id));
     });
 
-router.put('/:id/thumbnail', requireAuth, blockIfBanned, loadProject, requireProjectOwnership, thumbnailField, (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({error: 'A thumbnail image is required'});
-    }
-    const previousThumbnail = req.project.thumbnail_path;
-    const updated = projectsModel.updateThumbnail(req.project.id, req.file.path);
-    removeFile(previousThumbnail);
-    res.json(serializeProject(updated, req.user, req.user.id));
-});
+router.put('/:id/thumbnail',
+    requireAuth, blockIfBanned, requireVerifiedEmail, loadProject, requireProjectOwnership, thumbnailField,
+    (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({error: 'A thumbnail image is required'});
+        }
+        const previousThumbnail = req.project.thumbnail_path;
+        const updated = projectsModel.updateThumbnail(req.project.id, req.file.path);
+        removeFile(previousThumbnail);
+        res.json(serializeProject(updated, req.user, req.user.id));
+    });
 
-router.post('/:id/like', requireAuth, blockIfBanned, loadProject, (req, res) => {
+router.post('/:id/like', requireAuth, blockIfBanned, requireVerifiedEmail, loadProject, (req, res) => {
     projectsModel.like(req.user.id, req.project.id);
     projectsModel.autoFeatureIfEligible(req.project.id);
     res.json(projectsModel.getEngagement(req.project.id, req.user.id));
 });
 
-router.delete('/:id/like', requireAuth, blockIfBanned, loadProject, (req, res) => {
+router.delete('/:id/like', requireAuth, blockIfBanned, requireVerifiedEmail, loadProject, (req, res) => {
     projectsModel.unlike(req.user.id, req.project.id);
     res.json(projectsModel.getEngagement(req.project.id, req.user.id));
 });
 
-router.post('/:id/favorite', requireAuth, blockIfBanned, loadProject, (req, res) => {
+router.post('/:id/favorite', requireAuth, blockIfBanned, requireVerifiedEmail, loadProject, (req, res) => {
     projectsModel.favorite(req.user.id, req.project.id);
     projectsModel.autoFeatureIfEligible(req.project.id);
     res.json(projectsModel.getEngagement(req.project.id, req.user.id));
 });
 
-router.delete('/:id/favorite', requireAuth, blockIfBanned, loadProject, (req, res) => {
+router.delete('/:id/favorite', requireAuth, blockIfBanned, requireVerifiedEmail, loadProject, (req, res) => {
     projectsModel.unfavorite(req.user.id, req.project.id);
     res.json(projectsModel.getEngagement(req.project.id, req.user.id));
 });
 
-router.delete('/:id', requireAuth, blockIfBanned, loadProject, requireProjectOwnership, (req, res) => {
-    projectsModel.remove(req.project.id);
-    removeFile(req.project.file_path);
-    removeFile(req.project.thumbnail_path);
-    res.status(204).end();
-});
+router.delete('/:id',
+    requireAuth, blockIfBanned, requireVerifiedEmail, loadProject, requireProjectOwnership,
+    (req, res) => {
+        projectsModel.remove(req.project.id);
+        removeFile(req.project.file_path);
+        removeFile(req.project.thumbnail_path);
+        res.status(204).end();
+    });
 
 module.exports = router;

@@ -93,13 +93,15 @@ const findOrCreateGoogleLoginUser = async profile => {
     }
     const passwordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), BCRYPT_COST);
     const username = uniqueGoogleUsername();
-    return usersModel.create({
+    const user = usersModel.create({
         username,
         email: profile.email || null,
         passwordHash,
         displayName: username,
         googleId: profile.sub
     });
+    // Google already verified this address, so there's no need to make them re-verify it.
+    return profile.email_verified ? usersModel.setEmailVerified(user.id, true) : user;
 };
 
 const logInAs = (req, res, next, user, redirectUrl) => {

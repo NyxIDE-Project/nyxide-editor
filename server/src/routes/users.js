@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const usersModel = require('../models/users');
 const projectsModel = require('../models/projects');
-const {requireAuth, blockIfBanned} = require('../middleware/auth');
+const {requireAuth, blockIfBanned, requireVerifiedEmail} = require('../middleware/auth');
 const {avatarField, bannerField, removeFile} = require('../middleware/upload');
 const {serializeProfile, serializeUser, serializeMe, serializeProjectSummary} = require('../lib/serialize');
 const {USERNAME_CHANGE_COOLDOWN_MS} = require('../config');
@@ -31,7 +31,7 @@ router.get('/:username', loadUserByUsername, (req, res) => {
     res.json({...profile, featuredProjects: featured});
 });
 
-router.put('/me', requireAuth, blockIfBanned, (req, res) => {
+router.put('/me', requireAuth, blockIfBanned, requireVerifiedEmail, (req, res) => {
     const displayName = typeof req.body.displayName === 'string' ? req.body.displayName.slice(0, 60) : req.user.display_name;
     const bio = typeof req.body.bio === 'string' ? req.body.bio.slice(0, 500) : req.user.bio;
     const updated = usersModel.updateProfile(req.user.id, {displayName, bio});
@@ -51,7 +51,7 @@ router.put('/me/email', requireAuth, blockIfBanned, (req, res) => {
     res.json({user: serializeMe(updated)});
 });
 
-router.put('/me/username', requireAuth, blockIfBanned, (req, res) => {
+router.put('/me/username', requireAuth, blockIfBanned, requireVerifiedEmail, (req, res) => {
     const {username} = req.body;
     if (typeof username !== 'string' || !USERNAME_RE.test(username)) {
         return res.status(400).json({error: 'Username must be 3-20 letters, numbers, or underscores'});
@@ -79,7 +79,7 @@ router.put('/me/username', requireAuth, blockIfBanned, (req, res) => {
     res.json({user: serializeMe(updated)});
 });
 
-router.post('/me/avatar', requireAuth, blockIfBanned, avatarField, (req, res) => {
+router.post('/me/avatar', requireAuth, blockIfBanned, requireVerifiedEmail, avatarField, (req, res) => {
     if (!req.file) {
         return res.status(400).json({error: 'No avatar file provided'});
     }
@@ -96,7 +96,7 @@ router.get('/:username/avatar', loadUserByUsername, (req, res) => {
     res.sendFile(path.resolve(req.profileUser.avatar_path));
 });
 
-router.post('/me/banner', requireAuth, blockIfBanned, bannerField, (req, res) => {
+router.post('/me/banner', requireAuth, blockIfBanned, requireVerifiedEmail, bannerField, (req, res) => {
     if (!req.file) {
         return res.status(400).json({error: 'No banner file provided'});
     }
@@ -113,7 +113,7 @@ router.get('/:username/banner', loadUserByUsername, (req, res) => {
     res.sendFile(path.resolve(req.profileUser.banner_path));
 });
 
-router.put('/me/featured', requireAuth, blockIfBanned, (req, res) => {
+router.put('/me/featured', requireAuth, blockIfBanned, requireVerifiedEmail, (req, res) => {
     const projectIds = Array.isArray(req.body.projectIds) ? req.body.projectIds : [];
     const owned = projectIds.filter(id => {
         const project = projectsModel.getById(id);
