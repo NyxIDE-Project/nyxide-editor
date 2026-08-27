@@ -1,0 +1,33 @@
+.banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    background: #4a3b00;
+    color: #ffe694;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center;
+    flex-wrap: wrap;
+}
+
+.content {
+    max-width: 50rem;
+}
+
+.button {
+    flex-shrink: 0;
+    padding: 0.3rem 0.9rem;
+    border: 1.5px solid #ffe694;
+    border-radius: 999px;
+    color: #ffe694;
+    text-decoration: none;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.button:hover {
+    text-decoration: none;
+    opacity: 0.8;
+}

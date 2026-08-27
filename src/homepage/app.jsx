@@ -5,6 +5,7 @@ import Topbar from './components/topbar/topbar.jsx';
 import HeroBanner from './components/hero-banner/hero-banner.jsx';
 import Footer from './components/footer/footer.jsx';
 import SiteBanner from './components/site-banner/site-banner.jsx';
+import EmailVerificationBanner from './components/email-verification-banner/email-verification-banner.jsx';
 import HomePage from './pages/home/home-page.jsx';
 import ExplorePage from './pages/explore/explore-page.jsx';
 import SearchPage from './pages/search/search-page.jsx';
@@ -19,6 +20,7 @@ import AdminPage from './pages/admin/admin-page.jsx';
 import TermsPage from './pages/legal/terms-page.jsx';
 import PrivacyPage from './pages/legal/privacy-page.jsx';
 import GuidelinesPage from './pages/legal/guidelines-page.jsx';
+import FaqPage from './pages/legal/faq-page.jsx';
 import DesktopPage from './pages/desktop/desktop-page.jsx';
 import ArchivePage from './pages/archive/archive-page.jsx';
 import ForgotPasswordPage from './pages/forgot-password/forgot-password-page.jsx';
@@ -34,6 +36,7 @@ const App = () => {
     return (
         <React.Fragment>
             <Topbar />
+            <EmailVerificationBanner />
             <SiteBanner key={location.pathname} />
             <HeroBanner />
             <main className={styles.main}>
@@ -107,6 +110,11 @@ const App = () => {
                         exact
                         path="/guidelines"
                         component={GuidelinesPage}
+                    />
+                    <Route
+                        exact
+                        path="/faq"
+                        component={FaqPage}
                     />
                     <Route
                         exact

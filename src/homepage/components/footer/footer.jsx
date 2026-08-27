@@ -55,6 +55,12 @@ const Footer = () => (
                     >
                         {'Uploading Guidelines'}
                     </Link>
+                    <Link
+                        className={styles.link}
+                        to="/faq"
+                    >
+                        {'FAQ'}
+                    </Link>
                 </div>
                 <div className={styles.column}>
                     <div className={styles.columnHeading}>{'Community'}</div>
